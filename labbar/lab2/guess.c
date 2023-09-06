@@ -15,10 +15,7 @@ int main(void)
     int num = -1;
     int counter = 0;
 
-    int buf_siz = 255;
-    char buf[buf_siz];
-
-    name = ask_question_string("Skriv in ditt namn: ", buf, buf_siz);
+    name = ask_question_string("Skriv in ditt namn: ");
     printf("Du %s, jag tänker på ett tal ... kan du gissa vilket?", name);
 
     while (num != r && counter < 15)
@@ -37,11 +34,11 @@ int main(void)
 
     if (counter >= 15)
     {
-        printf("\nNu har du slut på gissningar! Jag tänkte på '%d'\n", r);
+        printf("\nNu har du slut på gissningar! Jag tänkte på %d\n", r);
     }
     else
     {
-        printf("\nBingo\nDet tog '%s' '%d' gissningar att komma fram till '%d'\n", name, counter, r);
+        printf("\nBingo\nDet tog %s %d gissningar att komma fram till %d\n", name, counter, r);
     }
 
     return 0;

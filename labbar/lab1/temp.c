@@ -16,6 +16,11 @@ bool is_number(char *str)
             {
                 num = true;
             }
+            else if (isdigit(str[i]) == 0)
+            {
+                num = false;
+                break;
+            }
         }
         else
         {
