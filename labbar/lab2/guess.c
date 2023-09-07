@@ -20,7 +20,7 @@ int main(void)
 
     while (num != r && counter < 15)
     {   
-        num = ask_question_int("");
+        num = ask_question_int("\n Enter a number: ");
         if (num > r)
         {
             printf("För stort!");

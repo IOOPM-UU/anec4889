@@ -76,6 +76,24 @@ bool not_empty(char *str)
     return strlen(str) > 0;
 }
 
+bool is_shelf(char *str)
+{
+    if (strlen(str) != 3)
+    {
+        return false;
+    }
+    else if (isdigit(str[0]) == 1)
+    {
+        return false;
+    }
+    else if (isdigit(str[1]) == 0 || isdigit(str[2]) == 0)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 answer_t ask_question(char *question, check_func check, convert_func convert)
 {
     int buf_siz = 255;
@@ -102,3 +120,7 @@ int ask_question_int(char *question)
     return answer.int_value;
 }
 
+char *ask_question_shelf(char *question)
+{
+    return ask_question(question, is_shelf, (convert_func) strdup).string_value;
+}
