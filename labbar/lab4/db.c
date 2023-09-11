@@ -155,7 +155,8 @@ int main(int argc, char *argv[])
     // Skriv ut innehållet
     for (int i = 0; i < db_siz; ++i)
     {
-      list_db(&db[i], i);
+      // list_db(&db[i], i);
+      print_item(&db[i]);
     }
     edit_db(db, db_siz);
   }

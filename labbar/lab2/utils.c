@@ -12,8 +12,7 @@ void clear_input_buffer()
     do
     {
         c = getchar();
-    }
-    while (c != '\n' && c != EOF);
+    } while (c != '\n' && c != EOF);
 }
 
 int read_string(char *buf, int buf_siz)
@@ -30,8 +29,7 @@ int read_string(char *buf, int buf_siz)
         }
         buf[counter] = c;
         counter++;
-    }
-    while (counter < (buf_siz - 1));
+    } while (counter < (buf_siz - 1));
     buf[buf_siz - 1] = '\0';
     return counter;
     clear_input_buffer();
@@ -101,26 +99,24 @@ answer_t ask_question(char *question, check_func check, convert_func convert)
 
     do
     {
-        printf("'%s", question);
+        printf("%s\n", question);
         read_string(buf, buf_siz);
-    }
-    while (!check(buf) || strlen(buf) == 0);
-
+    } while (!check(buf) || strlen(buf) == 0);
     return convert(buf);
 }
 
 char *ask_question_string(char *question)
 {
-    return ask_question(question, not_empty, (convert_func) strdup).string_value;
+    return ask_question(question, not_empty, (convert_func)strdup).string_value;
 }
 
 int ask_question_int(char *question)
 {
-    answer_t answer = ask_question(question, is_number, (convert_func) atoi);
+    answer_t answer = ask_question(question, is_number, (convert_func)atoi);
     return answer.int_value;
 }
 
 char *ask_question_shelf(char *question)
 {
-    return ask_question(question, is_shelf, (convert_func) strdup).string_value;
+    return ask_question(question, is_shelf, (convert_func)strdup).string_value;
 }
