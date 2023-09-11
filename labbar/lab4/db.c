@@ -46,38 +46,37 @@ item_t input_item()
 char *magick(char *arr1[], char *arr2[], char *arr3[], int i)
 {
   char buf[255];
-  int r = random() % 3;
+  int r = random() % i;
   int buf_i = 0;
   char *src = arr1[r];
-  for (int i = 0; i < strlen(src); i++)
+  for (int j = 0; j < strlen(src); j++)
   {
-    buf[buf_i] = src[i];
+    buf[buf_i] = src[j];
     buf_i++;
   }
   buf[buf_i] = '-';
   buf_i++;
 
-  r = random() % 3;
+  r = random() % i;
   src = arr2[r];
-  for (int i = 0; i < strlen(src); i++)
+  for (int j = 0; j < strlen(src); j++)
   {
-    buf[buf_i] = src[i];
+    buf[buf_i] = src[j];
     buf_i++;
   }
 
   buf[buf_i] = ' ';
   buf_i++;
 
-  r = random() % 3;
+  r = random() % i;
   src = arr3[r];
-  for (int i = 0; i < strlen(src); i++)
+  for (int j = 0; j < strlen(src); j++)
   {
-    buf[buf_i] = src[i];
+    buf[buf_i] = src[j];
     buf_i++;
   }
 
   buf[buf_i] = '\0';
-  buf_i++;
 
   return strdup(buf);
 }
