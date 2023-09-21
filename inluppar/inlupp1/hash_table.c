@@ -29,12 +29,27 @@ ioopm_hash_table_t *ioopm_hash_table_create(void)
   return result;
 }
 
+void entry_destroy(entry_t *bucket)
+{
+  entry_t *current_bucket = bucket->next;
+  while (current_bucket != NULL)
+  {
+    entry_t *temp = bucket->next;
+    free(current_bucket);
+    current_bucket = temp;
+  }
+}
+
 void ioopm_hash_table_destroy(ioopm_hash_table_t *ht)
 {
+  for (int i = 0; i < 17; i++)
+  {
+    entry_destroy(&ht->buckets[i]);
+  }
   free(ht);
 }
 
-static *find_previous_entry_for_key(entry_t *bucket, int key)
+entry_t *find_previous_entry_for_key(entry_t *bucket, int key)
 {
   entry_t *current = bucket->next;
   entry_t *previous = bucket;
@@ -46,7 +61,7 @@ static *find_previous_entry_for_key(entry_t *bucket, int key)
   return previous;
 }
 
-static *entry_create(int key, char *value, entry_t *next)
+entry_t *entry_create(int key, char *value, entry_t *next)
 {
   entry_t *new_entry = calloc(1, sizeof(entry_t));
   new_entry->key = key;
