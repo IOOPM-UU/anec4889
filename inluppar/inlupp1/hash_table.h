@@ -1,9 +1,12 @@
 #pragma once
+#ifndef __HASH_TABLE__
+#define __HASH_TABLE__
+#include <stdbool.h>
 
 /**
  * @file hash_table.h
- * @author write both your names here
- * @date 1 Sep 2022
+ * @author Andreas Johansson, Anton Eckervald
+ * @date 20 Sep 2023
  * @brief Simple hash table that maps integer keys to string values.
  *
  * Here typically goes a more extensive explanation of what the header
@@ -33,10 +36,12 @@ void ioopm_hash_table_insert(ioopm_hash_table_t *ht, int key, char *value);
 /// @param ht hash table operated upon
 /// @param key key to lookup
 /// @return the value mapped to by key (FIXME: incomplete)
-char *ioopm_hash_table_lookup(ioopm_hash_table_t *ht, int key);
+char *ioopm_hash_table_lookup(ioopm_hash_table_t *ht, int key, char *value);
 
 /// @brief remove any mapping from key to a value
 /// @param ht hash table operated upon
 /// @param key key to remove
 /// @return the value mapped to by key (FIXME: incomplete)
 char *ioopm_hash_table_remove(ioopm_hash_table_t *ht, int key);
+
+#endif
