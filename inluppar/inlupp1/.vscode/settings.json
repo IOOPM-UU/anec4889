@@ -1,0 +1,28 @@
+{
+  "files.associations": {
+    "hash_table.h": "c",
+    "__hash_table": "c",
+    "__split_buffer": "c",
+    "array": "c",
+    "bitset": "c",
+    "initializer_list": "c",
+    "unordered_map": "c",
+    "vector": "c",
+    "__node_handle": "c",
+    "__bit_reference": "c",
+    "chrono": "c",
+    "__memory": "c",
+    "limits": "c",
+    "optional": "c",
+    "ratio": "c",
+    "system_error": "c",
+    "tuple": "c",
+    "type_traits": "c",
+    "stddef.h": "c",
+    "atomic": "c",
+    "string.h": "c",
+    "webstore.h": "c",
+    "linked_list.h": "c"
+  },
+  "C_Cpp.errorSquiggles": "enabled"
+}
