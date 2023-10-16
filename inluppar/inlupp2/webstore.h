@@ -8,6 +8,14 @@
 #include "datastrukturer/iterator.h"
 #include "utils.h"
 
+typedef struct shpn_cart cart_t;
+
+struct shpn_cart
+{
+    ioopm_hash_table_t *cart_ht;
+    int cart_nr;
+};
+
 typedef struct merch merch_t;
 
 struct merch
@@ -32,6 +40,8 @@ struct warehouse
 {
     ioopm_hash_table_t *merch_ht;
     ioopm_hash_table_t *location_ht;
+    ioopm_hash_table_t *cart_ht;
+    size_t cart_index;
 };
 
 /// @brief Create a new warehouse
@@ -74,8 +84,24 @@ void destroy_all(ioopm_warehouse_t *wh);
 void ioopm_show_stock(merch_t *merch);
 
 /// @brief Replenish merch
-/// @param wh  Warehouse
+/// @param wh Warehouse
 /// @param merch Given merch to replenish
 void ioopm_replenish(ioopm_warehouse_t *wh, merch_t *merch);
+
+/// @brief Creates a shopping cart
+/// @param wh Warehouse
+void ioopm_create_cart(ioopm_warehouse_t *wh);
+
+/// @brief Removes a shopping cart
+/// @param wh Warehouse
+/// @param index Cart to be removed
+void ioopm_remove_cart(ioopm_warehouse_t *wh, int index);
+
+/// @brief Adds merch and quantity to cart
+/// @param wh Warehouse
+/// @param cart Specified cart
+/// @param merch Given merch to add
+/// @param quantity Quantity of merch
+void ioopm_add_cart(ioopm_warehouse_t *wh, ioopm_hash_table_t *cart, merch_t *merch, int quantity);
 
 #endif

@@ -110,6 +110,27 @@ void inter_replenish(ioopm_warehouse_t *wh)
     ioopm_replenish(wh, mrc);
 }
 
+void inter_remove_cart(ioopm_warehouse_t *wh)
+{
+    int index = ask_question_int("Cart to remove: ");
+    while (index > wh->cart_index + 1 || index < 1)
+    {
+        printf("Cart %d does not exist!\n", index);
+        index = ask_question_int("Cart to remove: ");
+    }
+
+    char *confirmation = ask_question_letter("[Y] Do you really want to remove?");
+    if (toupper(confirmation[0]) == 89)
+    {
+        ioopm_remove_cart(wh, index - 1);
+    }
+}
+
+void inter_add_cart(ioopm_warehouse_t *wh)
+{
+    ioopm_list_merch(wh);
+}
+
 void event_loop(ioopm_warehouse_t *wh)
 {
     char *ans = ask_question_menu();
@@ -137,6 +158,18 @@ void event_loop(ioopm_warehouse_t *wh)
     else if (toupper(ans[0]) == 80)
     {
         inter_replenish(wh);
+    }
+    else if (toupper(ans[0]) == 67)
+    {
+        ioopm_create_cart(wh);
+    }
+    else if (toupper(ans[0]) == 82)
+    {
+        inter_remove_cart(wh);
+    }
+    else if (ans[0] == 43)
+    {
+        inter_add_cart(wh);
     }
     else if (toupper(ans[0]) == 81)
     {

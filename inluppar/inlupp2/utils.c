@@ -99,6 +99,9 @@ bool is_menu(char *str)
             toupper(str[0]) == 69 ||
             toupper(str[0]) == 83 ||
             toupper(str[0]) == 80 ||
+            toupper(str[0]) == 67 ||
+            toupper(str[0]) == 82 ||
+            str[0] == 43 ||
             toupper(str[0]) == 81)
         {
             return true;
@@ -168,7 +171,7 @@ char *ask_question_shelf(char *question)
 
 char *ask_question_menu()
 {
-    char *menu_str = "[A] Add Merchandise\n[L] List Merchandise\n[D] Remove Merchandise\n[E] Edit Merchandise\n[S] Show Stock\n[P] Replenish Merchandise\n[Q] Quit";
+    char *menu_str = "[A] Add Merchandise\n[L] List Merchandise\n[D] Remove Merchandise\n[E] Edit Merchandise\n[S] Show Stock\n[P] Replenish Merchandise\n[C] Create Cart\n[R] Remove Cart\n[+] Add to cart\n[Q] Quit";
     return ask_question(menu_str, (check_func)is_menu, (convert_func)strdup).string_value;
 }
 
