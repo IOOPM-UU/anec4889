@@ -97,7 +97,26 @@ bool is_menu(char *str)
             toupper(str[0]) == 76 ||
             toupper(str[0]) == 68 ||
             toupper(str[0]) == 69 ||
+            toupper(str[0]) == 83 ||
+            toupper(str[0]) == 80 ||
             toupper(str[0]) == 81)
+        {
+            return true;
+        }
+        return false;
+    }
+}
+
+bool is_replenish(char *str)
+{
+    if (strlen(str) != 1)
+    {
+        return false;
+    }
+    else
+    {
+        if (toupper(str[0]) == 65 ||
+            toupper(str[0]) == 82)
         {
             return true;
         }
@@ -149,11 +168,17 @@ char *ask_question_shelf(char *question)
 
 char *ask_question_menu()
 {
-    char *menu_str = "[A] Add Merchandise\n[L] List Merchandise\n[D] Remove Merchandise\n[E] Edit Merchandise\n[Q] Quit";
-    return ask_question(menu_str, (check_func)is_menu, (convert_func)to_upper).string_value;
+    char *menu_str = "[A] Add Merchandise\n[L] List Merchandise\n[D] Remove Merchandise\n[E] Edit Merchandise\n[S] Show Stock\n[P] Replenish Merchandise\n[Q] Quit";
+    return ask_question(menu_str, (check_func)is_menu, (convert_func)strdup).string_value;
 }
 
 char *ask_question_letter(char *question)
 {
-    return ask_question(question, (check_func)is_true, (convert_func)to_upper).string_value;
+    return ask_question(question, (check_func)is_true, (convert_func)strdup).string_value;
+}
+
+char *ask_question_replenish()
+{
+    char *str = "[A] Add shelf\n[R] Replenish existing shelf";
+    return ask_question(str, (check_func)is_replenish, (convert_func)strdup).string_value;
 }

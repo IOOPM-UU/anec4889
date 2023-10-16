@@ -20,7 +20,10 @@ memtest: test
 
 covtest: test
 	@./test
-	gcov -abcfu datastrukturer/hash_table.c datastrukturerlinked_list.c webstore.c unit_test.c utils.c
+	gcov -abcfu datastrukturer/hash_table.c datastrukturer/linked_list.c webstore.c unit_test.c utils.c
 
 clean:
 	rm -f *.o *.gcno *.gcda *.gcov test
+
+comp:
+	gcc -Wall -pedantic -g datastrukturer/hash_table.c datastrukturer/linked_list.c webstore.c utils.c interface.c

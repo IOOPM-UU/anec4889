@@ -60,3 +60,7 @@ char *ask_question_menu();
 /// @param question The question to be answered in terminal
 /// @return the input
 char *ask_question_letter(char *question);
+
+/// @brief Function to ask for replenish input
+/// @return The input letter
+char *ask_question_replenish();
