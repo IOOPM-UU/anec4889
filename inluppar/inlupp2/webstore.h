@@ -24,6 +24,7 @@ struct merch
     char *desc;
     int price;
     ioopm_list_t *locs;
+    int cart_num;
 };
 
 typedef struct shelf shelf_t;
@@ -65,6 +66,16 @@ void ioopm_list_merch(ioopm_warehouse_t *wh);
 /// @param rmv_item Item to be removed
 void ioopm_remove_merch(ioopm_warehouse_t *wh, char *rmv_item);
 
+/// @brief Create a new shelf and insert in warehouse
+/// @param wh Warehouse
+/// @param merch Given merch
+void shelf_maker(ioopm_warehouse_t *wh, merch_t *merch);
+
+/// @brief Retrieve the total quantity of a merch
+/// @param merch The given merch
+/// @return The size of merch
+size_t merch_size(merch_t *merch);
+
 /// @brief Edit item in hash table
 /// @param wh The given warehouse
 /// @param inf The given hash table
@@ -86,7 +97,9 @@ void ioopm_show_stock(merch_t *merch);
 /// @brief Replenish merch
 /// @param wh Warehouse
 /// @param merch Given merch to replenish
-void ioopm_replenish(ioopm_warehouse_t *wh, merch_t *merch);
+/// @param shelf_index Index of shelf
+/// @param quantity Number to increase stock
+void ioopm_replenish(ioopm_warehouse_t *wh, merch_t *merch, int shelf_index, int quantity);
 
 /// @brief Creates a shopping cart
 /// @param wh Warehouse
@@ -98,10 +111,9 @@ void ioopm_create_cart(ioopm_warehouse_t *wh);
 void ioopm_remove_cart(ioopm_warehouse_t *wh, int index);
 
 /// @brief Adds merch and quantity to cart
-/// @param wh Warehouse
 /// @param cart Specified cart
 /// @param merch Given merch to add
 /// @param quantity Quantity of merch
-void ioopm_add_cart(ioopm_warehouse_t *wh, ioopm_hash_table_t *cart, merch_t *merch, int quantity);
+void ioopm_add_cart(ioopm_hash_table_t *cart, merch_t *merch, int quantity);
 
 #endif

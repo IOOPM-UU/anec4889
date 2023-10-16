@@ -106,8 +106,31 @@ void inter_show_stock(ioopm_warehouse_t *wh)
 void inter_replenish(ioopm_warehouse_t *wh)
 {
     merch_t *mrc = ask_merch(wh);
+    if (mrc->locs->head->next == NULL)
+    {
+        shelf_maker(wh, mrc);
+    }
+    ioopm_show_stock(mrc);
 
-    ioopm_replenish(wh, mrc);
+    char *ans = ask_question_replenish();
+    while (toupper(ans[0]) == 65)
+    {
+        free(ans);
+        shelf_maker(wh, mrc);
+        ioopm_show_stock(mrc);
+        ans = ask_question_replenish();
+    }
+    free(ans);
+    int shelf = ask_question_int("Shelf to replenish (index):");
+    while (shelf > ioopm_linked_list_size(mrc->locs) || shelf < 1)
+    {
+        printf("%s doesn't have shelf-index %d\n", mrc->name, shelf);
+        shelf = ask_question_int("Shelf to replenish (index):");
+    }
+
+    int i = ask_question_int("Increase stock with: ");
+
+    ioopm_replenish(wh, mrc, shelf, i);
 }
 
 void inter_remove_cart(ioopm_warehouse_t *wh)
@@ -126,9 +149,35 @@ void inter_remove_cart(ioopm_warehouse_t *wh)
     }
 }
 
+bool cart_check(ioopm_warehouse_t *wh, merch_t *merch, int quantity)
+{
+    if ((quantity + merch->cart_num) <= merch_size(merch) && quantity > 0)
+    {
+        return true;
+    }
+    return false;
+}
+
 void inter_add_cart(ioopm_warehouse_t *wh)
 {
+    int index = ask_question_int("Cart to add: ");
+    while (index > wh->cart_index + 1 || index < 1)
+    {
+        printf("Cart %d does not exist!\n", index);
+        index = ask_question_int("Cart to add: ");
+    }
+
     ioopm_list_merch(wh);
+    merch_t *merch = ask_merch(wh);
+
+    int quant = ask_question_int("How many: ");
+    while (!cart_check(wh, merch, quant))
+    {
+        puts("Not a valid amount\n");
+        quant = ask_question_int("How many: ");
+    }
+    ioopm_hash_table_t *cart = ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = index - 1}).value.p;
+    ioopm_add_cart(cart, merch, quant);
 }
 
 void event_loop(ioopm_warehouse_t *wh)
