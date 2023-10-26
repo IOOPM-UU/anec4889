@@ -101,6 +101,10 @@ void ioopm_show_stock(merch_t *merch);
 /// @param quantity Number to increase stock
 void ioopm_replenish(ioopm_warehouse_t *wh, merch_t *merch, int shelf_index, int quantity);
 
+/// @brief Print out merch of given cart
+/// @param cart The given cart
+void print_cart(ioopm_hash_table_t *cart);
+
 /// @brief Creates a shopping cart
 /// @param wh Warehouse
 void ioopm_create_cart(ioopm_warehouse_t *wh);
@@ -115,5 +119,26 @@ void ioopm_remove_cart(ioopm_warehouse_t *wh, int index);
 /// @param merch Given merch to add
 /// @param quantity Quantity of merch
 void ioopm_add_cart(ioopm_hash_table_t *cart, merch_t *merch, int quantity);
+
+/// @brief Find the bucket where merch is placed in cart ht
+/// @param cart The given cart ht
+/// @param merch The given merch
+/// @return Index in ht
+int find_cart_index(ioopm_hash_table_t *cart, merch_t *merch);
+
+/// @brief Removes merch and quantity from cart
+/// @param cart Specified cart
+/// @param merch Given merch to add
+/// @param quantity Quantity of merch
+void ioopm_remove_merch_cart(ioopm_hash_table_t *cart, merch_t *merch, int quantity);
+
+/// @brief Removes merch and quantity from cart
+/// @param cart Specified cart
+/// @return Cost of the cart
+int ioopm_calculate_cost(ioopm_hash_table_t *cart);
+
+/// @brief Decrease stock from the warehouse and removes the cart
+/// @param cart Specified cart
+void ioopm_checkout(ioopm_hash_table_t *cart);
 
 #endif

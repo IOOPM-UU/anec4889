@@ -93,16 +93,19 @@ bool is_menu(char *str)
     }
     else
     {
-        if (toupper(str[0]) == 65 ||
-            toupper(str[0]) == 76 ||
-            toupper(str[0]) == 68 ||
-            toupper(str[0]) == 69 ||
-            toupper(str[0]) == 83 ||
-            toupper(str[0]) == 80 ||
-            toupper(str[0]) == 67 ||
-            toupper(str[0]) == 82 ||
-            str[0] == 43 ||
-            toupper(str[0]) == 81)
+        if (toupper(str[0]) == 'A' ||
+            toupper(str[0]) == 'L' ||
+            toupper(str[0]) == 'D' ||
+            toupper(str[0]) == 'E' ||
+            toupper(str[0]) == 'S' ||
+            toupper(str[0]) == 'P' ||
+            toupper(str[0]) == 'C' ||
+            toupper(str[0]) == 'R' ||
+            str[0] == '+' ||
+            str[0] == '-' ||
+            str[0] == '=' ||
+            toupper(str[0]) == 'O' ||
+            toupper(str[0]) == 'Q')
         {
             return true;
         }
@@ -171,7 +174,7 @@ char *ask_question_shelf(char *question)
 
 char *ask_question_menu()
 {
-    char *menu_str = "[A] Add Merchandise\n[L] List Merchandise\n[D] Remove Merchandise\n[E] Edit Merchandise\n[S] Show Stock\n[P] Replenish Merchandise\n[C] Create Cart\n[R] Remove Cart\n[+] Add to cart\n[Q] Quit";
+    char *menu_str = "[A] Add Merchandise\n[L] List Merchandise\n[D] Remove Merchandise\n[E] Edit Merchandise\n[S] Show Stock\n[P] Replenish Merchandise\n[C] Create Cart\n[R] Remove Cart\n[+] Add to cart\n[-] Remove merch from cart\n[=] Calculate cost of cart\n[Q] Quit";
     return ask_question(menu_str, (check_func)is_menu, (convert_func)strdup).string_value;
 }
 
