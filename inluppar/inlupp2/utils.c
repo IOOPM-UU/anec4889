@@ -174,7 +174,7 @@ char *ask_question_shelf(char *question)
 
 char *ask_question_menu()
 {
-    char *menu_str = "[A] Add Merchandise\n[L] List Merchandise\n[D] Remove Merchandise\n[E] Edit Merchandise\n[S] Show Stock\n[P] Replenish Merchandise\n[C] Create Cart\n[R] Remove Cart\n[+] Add to cart\n[-] Remove merch from cart\n[=] Calculate cost of cart\n[Q] Quit";
+    char *menu_str = "[A] Add Merchandise\n[L] List Merchandise\n[D] Remove Merchandise\n[E] Edit Merchandise\n[S] Show Stock\n[P] Replenish Merchandise\n[C] Create Cart\n[R] Remove Cart\n[+] Add to cart\n[-] Remove merch from cart\n[=] Calculate cost of cart\n[O] Checkout\n[Q] Quit";
     return ask_question(menu_str, (check_func)is_menu, (convert_func)strdup).string_value;
 }
 

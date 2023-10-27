@@ -365,8 +365,9 @@ void ioopm_checkout(ioopm_hash_table_t *cart)
     {
         merch_t *mrc = ioopm_iterator_next(merch_itr).p;
         int quant = ioopm_iterator_next(quantity_itr).i;
+
         ioopm_list_iterator_t *shelfs = ioopm_list_iterator(mrc->locs);
-        shelf_t *shelf =
+        // shelf_t *shelf = ;
     }
 
     ioopm_iterator_destroy(quantity_itr);

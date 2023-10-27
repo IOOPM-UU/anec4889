@@ -294,6 +294,31 @@ void inter_calculate_cost(ioopm_warehouse_t *wh)
     printf("Cost: %d\n", ioopm_calculate_cost(cart));
 }
 
+void inter_checkout(ioopm_warehouse_t *wh)
+{
+    for (int i = 1; i <= No_Buckets; i++)
+    {
+        if (exists_cart(wh, i))
+        {
+            ioopm_hash_table_t *cart = ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = i - 1}).value.p;
+            printf("Cart %d: \n", i);
+            print_cart(cart);
+            puts("");
+        }
+    }
+    int index = ask_question_int("Cart to checkout: ");
+    while (!exists_cart(wh, index))
+    {
+        printf("Cart %d does not exist!\n", index);
+        index = ask_question_int("Cart to checkout: ");
+    }
+
+    ioopm_hash_table_t *cart = ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = index - 1}).value.p;
+    ioopm_checkout(cart);
+
+    printf("Total cost of purchase: %d\n", ioopm_calculate_cost(cart));
+}
+
 void event_loop(ioopm_warehouse_t *wh)
 {
     char *ans = ask_question_menu();
@@ -342,7 +367,7 @@ void event_loop(ioopm_warehouse_t *wh)
     {
         inter_calculate_cost(wh);
     }
-    else if (ans[0] == 'O')
+    else if (toupper(ans[0]) == 'O')
     {
         inter_checkout(wh);
     }

@@ -9,29 +9,6 @@
 #include <assert.h>
 #include "webstore.h"
 
-int string_sum_hash(elem_t e)
-{
-    char *str = e.p;
-    int result = 0;
-    do
-    {
-        result += *str;
-    } while (*++str != '\0');
-    return result % No_Buckets;
-}
-
-static bool key_eq(elem_t a, elem_t b)
-{
-    return strcmp(a.p, b.p) == 0;
-}
-
-static bool shelf_eq(elem_t a, elem_t b)
-{
-    shelf_t *shelf_a = a.p;
-    shelf_t *shelf_b = b.p;
-    return strcmp(shelf_a->name, shelf_b->name) == 0;
-}
-
 int init_suite(void)
 {
     // Change this function if you want to do something *before* you
@@ -48,29 +25,195 @@ int clean_suite(void)
 
 void test_add_merch()
 {
+    ioopm_warehouse_t *wh = ioopm_warehouse_create();
+    char *a = strdup("a");
+    char *b = strdup("b");
 
-    ioopm_hash_table_t *warehouse_ht = ioopm_hash_table_create(string_sum_hash, shelf_eq, NULL);
-    ioopm_hash_table_t *information_ht = ioopm_hash_table_create(string_sum_hash, key_eq, NULL);
+    ioopm_add_merch(wh, a, b, 1);
+    CU_ASSERT_TRUE(ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "a"}).success);
 
-    ioopm_add_merch(warehouse_ht, information_ht, "a", "a", 1);
-    CU_ASSERT_TRUE(ioopm_hash_table_lookup(information_ht, (elem_t){.p = "a"}).success);
-
-    destroy_all(warehouse_ht, information_ht);
+    destroy_all(wh);
 }
 
-void test_test()
+void test_remove_merch()
 {
-    for (int i = 0; i < 10; ++i)
-    {
-        char shelf[4];
-        shelf[0] = 'A' + (rand() % 26);
-        shelf[1] = '0' + (rand() % 10);
-        shelf[2] = '0' + (rand() % 10);
-        shelf[3] = '\0';
+    ioopm_warehouse_t *wh = ioopm_warehouse_create();
+    char *a = strdup("a");
+    char *b = strdup("b");
 
-        printf("%s\n", shelf);
-    }
+    ioopm_add_merch(wh, a, b, 1);
+    merch_t *merch1 = ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "a"}).value.p;
+    ioopm_replenish(wh, merch1, 1, 50);
+    ioopm_remove_merch(wh, "a");
+
+    CU_ASSERT_FALSE(ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "a"}).success);
+
+    destroy_all(wh);
 }
+
+void test_edit_merch()
+{
+    ioopm_warehouse_t *wh = ioopm_warehouse_create();
+    char *a = strdup("a");
+    char *b = strdup("b");
+    char *c = strdup("c");
+    char *d = strdup("d");
+
+    ioopm_add_merch(wh, a, b, 1);
+    merch_t *merch1 = ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "a"}).value.p;
+    ioopm_replenish(wh, merch1, 1, 50);
+    ioopm_edit_merch(wh, "a", c, d, 2);
+
+    CU_ASSERT_FALSE(ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "a"}).success);
+    CU_ASSERT_TRUE(ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "c"}).success);
+
+    destroy_all(wh);
+}
+
+void test_replenish()
+{
+    ioopm_warehouse_t *wh = ioopm_warehouse_create();
+    char *a = strdup("a");
+    char *b = strdup("b");
+
+    ioopm_add_merch(wh, a, b, 1);
+    merch_t *merch1 = ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "a"}).value.p;
+    ioopm_replenish(wh, merch1, 1, 50);
+
+    shelf_t *shelf = ioopm_linked_list_get(merch1->locs, 0).p;
+
+    CU_ASSERT_EQUAL(shelf->quantity, 50);
+
+    destroy_all(wh);
+}
+
+void test_create_cart()
+{
+    ioopm_warehouse_t *wh = ioopm_warehouse_create();
+
+    ioopm_create_cart(wh);
+
+    CU_ASSERT_TRUE(ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = 0}).success);
+
+    destroy_all(wh);
+}
+
+void test_remove_cart()
+{
+    ioopm_warehouse_t *wh = ioopm_warehouse_create();
+
+    ioopm_create_cart(wh);
+
+    char *a = strdup("a");
+    char *b = strdup("b");
+
+    ioopm_add_merch(wh, a, b, 1);
+    merch_t *merch1 = ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "a"}).value.p;
+    ioopm_replenish(wh, merch1, 1, 50);
+
+    ioopm_hash_table_t *cart = ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = 0}).value.p;
+
+    ioopm_add_cart(cart, merch1, 30);
+
+    ioopm_remove_cart(wh, 0);
+
+    CU_ASSERT_FALSE(ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = 0}).success);
+
+    destroy_all(wh);
+}
+
+void test_add_to_cart()
+{
+    ioopm_warehouse_t *wh = ioopm_warehouse_create();
+
+    ioopm_create_cart(wh);
+
+    char *a = strdup("a");
+    char *b = strdup("b");
+
+    ioopm_add_merch(wh, a, b, 1);
+    merch_t *merch1 = ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "a"}).value.p;
+    ioopm_replenish(wh, merch1, 1, 50);
+
+    ioopm_hash_table_t *cart = ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = 0}).value.p;
+
+    ioopm_add_cart(cart, merch1, 30);
+    ioopm_add_cart(cart, merch1, 10);
+
+    int i = ioopm_hash_table_lookup(cart, (elem_t){.p = merch1}).value.i;
+
+    CU_ASSERT_EQUAL(i, 40);
+
+    destroy_all(wh);
+}
+
+void test_remove_from_cart()
+{
+    ioopm_warehouse_t *wh = ioopm_warehouse_create();
+
+    ioopm_create_cart(wh);
+
+    char *a = strdup("a");
+    char *b = strdup("b");
+
+    ioopm_add_merch(wh, a, b, 1);
+    merch_t *merch1 = ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "a"}).value.p;
+    ioopm_replenish(wh, merch1, 1, 50);
+
+    ioopm_hash_table_t *cart = ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = 0}).value.p;
+
+    ioopm_add_cart(cart, merch1, 30);
+
+    ioopm_remove_merch_cart(cart, merch1, 10);
+
+    int i = ioopm_hash_table_lookup(cart, (elem_t){.p = merch1}).value.i;
+
+    CU_ASSERT_EQUAL(i, 20);
+
+    destroy_all(wh);
+}
+
+void test_calculate()
+{
+    ioopm_warehouse_t *wh = ioopm_warehouse_create();
+
+    ioopm_create_cart(wh);
+
+    char *a = strdup("a");
+    char *b = strdup("b");
+    char *c = strdup("c");
+    char *d = strdup("d");
+
+    ioopm_add_merch(wh, a, b, 25);
+    ioopm_add_merch(wh, c, d, 10);
+    merch_t *merch1 = ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "a"}).value.p;
+    merch_t *merch2 = ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "c"}).value.p;
+    ioopm_replenish(wh, merch1, 1, 50);
+    ioopm_replenish(wh, merch2, 1, 10);
+
+    ioopm_hash_table_t *cart = ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = 0}).value.p;
+
+    ioopm_add_cart(cart, merch1, 30);
+    ioopm_add_cart(cart, merch2, 5);
+
+    CU_ASSERT_EQUAL(800, ioopm_calculate_cost(cart));
+
+    destroy_all(wh);
+}
+
+// void test_test()
+// {
+//     for (int i = 0; i < 10; ++i)
+//     {
+//         char shelf[4];
+//         shelf[0] = 'A' + (rand() % 26);
+//         shelf[1] = '0' + (rand() % 10);
+//         shelf[2] = '0' + (rand() % 10);
+//         shelf[3] = '\0';
+
+//         printf("%s\n", shelf);
+//     }
+// }
 
 int main()
 {
@@ -96,6 +239,14 @@ int main()
 
     if (
         (CU_add_test(my_test_suite, "Test add merch", test_add_merch) == NULL) ||
+        (CU_add_test(my_test_suite, "Test remove merch", test_remove_merch) == NULL) ||
+        (CU_add_test(my_test_suite, "Test edit merch", test_edit_merch) == NULL) ||
+        (CU_add_test(my_test_suite, "Test replenish merch", test_replenish) == NULL) ||
+        (CU_add_test(my_test_suite, "Test create cart", test_create_cart) == NULL) ||
+        (CU_add_test(my_test_suite, "Test remove cart", test_remove_cart) == NULL) ||
+        (CU_add_test(my_test_suite, "Test add to cart", test_add_to_cart) == NULL) ||
+        (CU_add_test(my_test_suite, "Test remove from cart", test_remove_from_cart) == NULL) ||
+        (CU_add_test(my_test_suite, "Test calculate cost", test_calculate) == NULL) ||
         0)
     {
         // If adding any of the tests fails, we tear down CUnit and exit

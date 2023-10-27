@@ -16,11 +16,11 @@ debug: datastrukturer/hash_table.c datastrukturer/linked_list.c webstore.c unit_
 	@gdb ./test
 
 memtest: test
-	valgrind ./test --leak-check=full -s
+	valgrind --leak-check=full -s ./test 
 
 covtest: test
 	@./test
-	gcov -abcfu datastrukturer/hash_table.c datastrukturer/linked_list.c webstore.c unit_test.c utils.c
+	gcov -abcfu webstore.c 
 
 clean:
 	rm -f *.o *.gcno *.gcda *.gcov test
