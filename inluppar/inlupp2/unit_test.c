@@ -201,19 +201,44 @@ void test_calculate()
     destroy_all(wh);
 }
 
-// void test_test()
-// {
-//     for (int i = 0; i < 10; ++i)
-//     {
-//         char shelf[4];
-//         shelf[0] = 'A' + (rand() % 26);
-//         shelf[1] = '0' + (rand() % 10);
-//         shelf[2] = '0' + (rand() % 10);
-//         shelf[3] = '\0';
+void test_checkout()
+{
+    ioopm_warehouse_t *wh = ioopm_warehouse_create();
 
-//         printf("%s\n", shelf);
-//     }
-// }
+    ioopm_create_cart(wh);
+
+    char *a = strdup("a");
+    char *b = strdup("b");
+    char *c = strdup("c");
+    char *d = strdup("d");
+
+    ioopm_add_merch(wh, a, b, 25);
+    ioopm_add_merch(wh, c, d, 10);
+    merch_t *merch1 = ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "a"}).value.p;
+    merch_t *merch2 = ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = "c"}).value.p;
+    ioopm_replenish(wh, merch1, 1, 50);
+    shelf_maker(wh, merch1);
+    ioopm_replenish(wh, merch1, 2, 30);
+    ioopm_replenish(wh, merch2, 1, 10);
+
+    ioopm_hash_table_t *cart = ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = 0}).value.p;
+
+    ioopm_add_cart(cart, merch1, 70);
+    ioopm_add_cart(cart, merch2, 5);
+
+    ioopm_checkout(wh, cart, 0);
+
+    CU_ASSERT_FALSE(ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = 0}).success);
+    shelf_t *shelf1 = merch1->locs->head->next->element.p;
+    shelf_t *shelf2 = merch1->locs->head->next->next->element.p;
+    shelf_t *shelf3 = merch2->locs->head->next->element.p;
+
+    CU_ASSERT_EQUAL(shelf1->quantity, 0);
+    CU_ASSERT_EQUAL(shelf2->quantity, 10);
+    CU_ASSERT_EQUAL(shelf3->quantity, 5);
+
+    destroy_all(wh);
+}
 
 int main()
 {
@@ -247,6 +272,7 @@ int main()
         (CU_add_test(my_test_suite, "Test add to cart", test_add_to_cart) == NULL) ||
         (CU_add_test(my_test_suite, "Test remove from cart", test_remove_from_cart) == NULL) ||
         (CU_add_test(my_test_suite, "Test calculate cost", test_calculate) == NULL) ||
+        (CU_add_test(my_test_suite, "Test Checkout", test_checkout) == NULL) ||
         0)
     {
         // If adding any of the tests fails, we tear down CUnit and exit

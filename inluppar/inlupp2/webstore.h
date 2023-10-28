@@ -138,7 +138,9 @@ void ioopm_remove_merch_cart(ioopm_hash_table_t *cart, merch_t *merch, int quant
 int ioopm_calculate_cost(ioopm_hash_table_t *cart);
 
 /// @brief Decrease stock from the warehouse and removes the cart
+/// @param wh Warehouse
 /// @param cart Specified cart
-void ioopm_checkout(ioopm_hash_table_t *cart);
+/// @param index Index of cart
+void ioopm_checkout(ioopm_warehouse_t *wh, ioopm_hash_table_t *cart, int index);
 
 #endif

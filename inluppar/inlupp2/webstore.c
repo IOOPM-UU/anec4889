@@ -54,11 +54,6 @@ void destroy_all_fun(elem_t key_ignored, elem_t *value, elem_t extra_ignored)
     free(mrc_to_destroy);
 }
 
-void destroy_all_fun2(elem_t key_ignored, elem_t *value, elem_t extra_ignored)
-{
-    free(value->p);
-}
-
 void destroy_ht(elem_t key_ignored, elem_t *value, elem_t extra_ignored)
 {
     ioopm_hash_table_destroy(value->p);
@@ -354,7 +349,7 @@ int ioopm_calculate_cost(ioopm_hash_table_t *cart)
     return total_cost;
 }
 
-void ioopm_checkout(ioopm_hash_table_t *cart)
+void ioopm_checkout(ioopm_warehouse_t *wh, ioopm_hash_table_t *cart, int index)
 {
     ioopm_list_t *merch = ioopm_hash_table_keys(cart);
     ioopm_list_t *quantity = ioopm_hash_table_values(cart);
@@ -367,20 +362,41 @@ void ioopm_checkout(ioopm_hash_table_t *cart)
         int quant = ioopm_iterator_next(quantity_itr).i;
 
         ioopm_list_iterator_t *shelfs = ioopm_list_iterator(mrc->locs);
-        // shelf_t *shelf = ;
+
+        while (quant > 0)
+        {
+            shelf_t *shelf = ioopm_iterator_next(shelfs).p;
+
+            if (shelf->quantity < quant)
+            {
+                quant -= shelf->quantity;
+                shelf->quantity = 0;
+            }
+            else
+            {
+                shelf->quantity -= quant;
+                quant = 0;
+            }
+        }
+        ioopm_iterator_destroy(shelfs);
     }
 
     ioopm_iterator_destroy(quantity_itr);
     ioopm_linked_list_destroy(quantity);
     ioopm_iterator_destroy(merch_itr);
     ioopm_linked_list_destroy(merch);
+
+    printf("Checked out cart %d:\n", index + 1);
+    print_cart(cart);
+    printf("Total cost: %d\n", ioopm_calculate_cost(cart));
+
+    ioopm_remove_cart(wh, index);
 }
 
 void destroy_all(ioopm_warehouse_t *wh)
 {
     ioopm_hash_table_apply_to_all(wh->merch_ht, destroy_all_fun, (elem_t){.p = NULL});
     ioopm_hash_table_apply_to_all(wh->cart_ht, destroy_ht, (elem_t){.p = NULL});
-    // ioopm_hash_table_apply_to_all(wh->location_ht, destroy_all_fun2, (elem_t){.p = NULL});
     ioopm_hash_table_destroy(wh->location_ht);
     ioopm_hash_table_destroy(wh->merch_ht);
 

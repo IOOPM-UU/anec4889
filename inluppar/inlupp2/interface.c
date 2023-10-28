@@ -314,9 +314,7 @@ void inter_checkout(ioopm_warehouse_t *wh)
     }
 
     ioopm_hash_table_t *cart = ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = index - 1}).value.p;
-    ioopm_checkout(cart);
-
-    printf("Total cost of purchase: %d\n", ioopm_calculate_cost(cart));
+    ioopm_checkout(wh, cart, index - 1);
 }
 
 void event_loop(ioopm_warehouse_t *wh)
@@ -331,19 +329,19 @@ void event_loop(ioopm_warehouse_t *wh)
     {
         ioopm_list_merch(wh);
     }
-    else if (toupper(ans[0]) == 'D')
+    else if (toupper(ans[0]) == 'D' && !ioopm_hash_table_is_empty(wh->merch_ht))
     {
         inter_remove_merch(wh);
     }
-    else if (toupper(ans[0]) == 'E')
+    else if (toupper(ans[0]) == 'E' && !ioopm_hash_table_is_empty(wh->merch_ht))
     {
         inter_edit_merch(wh);
     }
-    else if (toupper(ans[0]) == 'S')
+    else if (toupper(ans[0]) == 'S' && !ioopm_hash_table_is_empty(wh->merch_ht))
     {
         inter_show_stock(wh);
     }
-    else if (toupper(ans[0]) == 'P')
+    else if (toupper(ans[0]) == 'P' && !ioopm_hash_table_is_empty(wh->merch_ht))
     {
         inter_replenish(wh);
     }
@@ -351,23 +349,25 @@ void event_loop(ioopm_warehouse_t *wh)
     {
         ioopm_create_cart(wh);
     }
-    else if (toupper(ans[0]) == 'R')
+    else if (toupper(ans[0]) == 'R' && !ioopm_hash_table_is_empty(wh->cart_ht))
     {
         inter_remove_cart(wh);
     }
-    else if (ans[0] == '+')
+    else if (ans[0] == '+' && !ioopm_hash_table_is_empty(wh->cart_ht))
     {
         inter_add_cart(wh);
     }
-    else if (ans[0] == '-')
+    else if (ans[0] == '-' &&
+             !ioopm_hash_table_is_empty(wh->merch_ht) &&
+             !ioopm_hash_table_is_empty(wh->cart_ht))
     {
         inter_remove_merch_cart(wh);
     }
-    else if (ans[0] == '=')
+    else if (ans[0] == '=' && !ioopm_hash_table_is_empty(wh->cart_ht))
     {
         inter_calculate_cost(wh);
     }
-    else if (toupper(ans[0]) == 'O')
+    else if (toupper(ans[0]) == 'O' && !ioopm_hash_table_is_empty(wh->cart_ht))
     {
         inter_checkout(wh);
     }
