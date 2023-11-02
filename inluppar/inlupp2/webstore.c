@@ -171,6 +171,22 @@ void ioopm_list_merch(ioopm_warehouse_t *wh)
     puts("");
 }
 
+bool exists_cart(ioopm_warehouse_t *wh, int index)
+{
+    if (index < 1)
+    {
+        return false;
+    }
+    else
+    {
+        elem_t x;
+        x.i = index - 1;
+        option_t t = ioopm_hash_table_lookup(wh->cart_ht, x);
+        return t.success;
+    }
+    return false;
+}
+
 void ioopm_remove_merch(ioopm_warehouse_t *wh, char *rmv_item)
 {
     merch_t *to_remove = ioopm_hash_table_remove(wh->merch_ht, (elem_t){.p = rmv_item}).value.p;
@@ -182,6 +198,19 @@ void ioopm_remove_merch(ioopm_warehouse_t *wh, char *rmv_item)
         ioopm_hash_table_remove(wh->location_ht, (elem_t){.p = ioopm_iterator_next(itr).p});
     }
     ioopm_iterator_destroy(itr);
+
+    for (int i = 1; i <= No_Buckets; i++)
+    {
+        if (exists_cart(wh, i))
+        {
+            ioopm_hash_table_t *cart = ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = i - 1}).value.p;
+            if (find_cart_index(cart, to_remove) != -1)
+            {
+                int quantity = ioopm_hash_table_lookup(cart, (elem_t){.p = to_remove}).value.i;
+                ioopm_remove_merch_cart(cart, to_remove, quantity);
+            }
+        }
+    }
 
     destroy_all_fun((elem_t){.p = NULL}, &((elem_t){.p = to_remove}), (elem_t){.p = NULL});
 }
@@ -322,6 +351,10 @@ void ioopm_remove_merch_cart(ioopm_hash_table_t *cart, merch_t *merch, int quant
     merch_t *mrc = cart->buckets[cart_index].next->key.p;
     cart->buckets[cart_index].next->value.i -= quantity;
     mrc->cart_num -= quantity;
+    if (cart->buckets[cart_index].next->value.i == 0)
+    {
+        ioopm_hash_table_remove(cart, (elem_t){.p = mrc});
+    }
 }
 
 int ioopm_calculate_cost(ioopm_hash_table_t *cart)

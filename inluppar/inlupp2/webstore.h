@@ -8,14 +8,6 @@
 #include "datastrukturer/iterator.h"
 #include "utils.h"
 
-typedef struct shpn_cart cart_t;
-
-struct shpn_cart
-{
-    ioopm_hash_table_t *cart_ht;
-    int cart_nr;
-};
-
 typedef struct merch merch_t;
 
 struct merch
@@ -59,6 +51,11 @@ void ioopm_add_merch(ioopm_warehouse_t *wh, char *name, char *desc, int price);
 /// @brief List name of merch in alphabetical order, 20 at a time.
 /// @param inf Hash Table to retrieve names
 void ioopm_list_merch(ioopm_warehouse_t *wh);
+
+/// @brief Checks if cart exists in warehouse
+/// @param wh The given warehouse
+/// @param index Index of cart in wh
+bool exists_cart(ioopm_warehouse_t *wh, int index);
 
 /// @brief Remove merch from hashtable and all its instances in warehouse hash table
 /// @param wh Warehouse hash table

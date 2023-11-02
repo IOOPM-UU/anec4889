@@ -49,15 +49,38 @@ void inter_remove_merch(ioopm_warehouse_t *wh)
     free(input_rmv);
 }
 
+bool is_in_cart(ioopm_warehouse_t *wh, char *input_edit)
+{
+    while (!ioopm_hash_table_has_key(wh->merch_ht, (elem_t){.p = input_edit}))
+    {
+        printf("Doesn't exist or exists in cart, try again!\n");
+        free(input_edit);
+        input_edit = ask_question_string("Name of item to edit: ");
+    }
+    for (int i = 1; i <= No_Buckets; i++)
+    {
+        if (exists_cart(wh, i))
+        {
+            merch_t *merch = ioopm_hash_table_lookup(wh->merch_ht, (elem_t){.p = input_edit}).value.p;
+            ioopm_hash_table_t *cart = ioopm_hash_table_lookup(wh->cart_ht, (elem_t){.i = i - 1}).value.p;
+            if (find_cart_index(cart, merch) != -1)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void inter_edit_merch(ioopm_warehouse_t *wh)
 {
     // Ask for item to edit
     char *input_edit = ask_question_string("Name of item to edit: ");
-    while (!ioopm_hash_table_has_key(wh->merch_ht, (elem_t){.p = input_edit}))
+
+    while (is_in_cart(wh, input_edit))
     {
-        printf("%s doesn't exist, try again!\n", input_edit);
-        free(input_edit);
-        input_edit = ask_question_string("Name of item to remove: ");
+        printf("Doesn't exist or exists in cart, try again!\n");
+        input_edit = ask_question_string("Name of item to edit: ");
     }
 
     char *confirmation = ask_question_letter("[Y] Do you really want to edit?");
@@ -151,22 +174,6 @@ void inter_replenish(ioopm_warehouse_t *wh)
     int i = ask_question_int("Increase stock with: ");
 
     ioopm_replenish(wh, mrc, shelf, i);
-}
-
-bool exists_cart(ioopm_warehouse_t *wh, int index)
-{
-    if (index < 1)
-    {
-        return false;
-    }
-    else
-    {
-        elem_t x;
-        x.i = index - 1;
-        option_t t = ioopm_hash_table_lookup(wh->cart_ht, x);
-        return t.success;
-    }
-    return false;
 }
 
 void inter_remove_cart(ioopm_warehouse_t *wh)
