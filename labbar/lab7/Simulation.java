@@ -60,13 +60,13 @@ public class Simulation {
         int steps = 100;
         int intensity = 50;
         int maxGroceries = 5;
-        int thresholdForNewRegister = 5;
+        int thresholdForNewRegister = 2;
         Simulation s = new Simulation(intensity, maxGroceries, thresholdForNewRegister);
         for (int i = 0; i < steps; i++) {
             System.out.print("\033[2J\033[;H");
             s.step();
             System.out.println(s.toString());
-            Thread.sleep(100);
+            Thread.sleep(300);
         }
         System.out.println("");
         System.out.println("Simulation finished!");
