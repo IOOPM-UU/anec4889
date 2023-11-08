@@ -10,6 +10,10 @@ public abstract class SymbolicExpression {
         return false;
     }
 
+    public boolean isNamedConstant() {
+        return false;
+    }
+
     public boolean isCommand() {
         return false;
     }
@@ -20,6 +24,10 @@ public abstract class SymbolicExpression {
 
     public String getVariable() {
         throw new RuntimeException("getVariable() called on a non variable");
+    }
+
+    public String getNamedConstant() {
+        throw new RuntimeException("getNamedConstant() called on a non variable");
     }
 
     public String getName() {

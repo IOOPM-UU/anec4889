@@ -1,6 +1,7 @@
 package org.ioopm.calculator;
 
 import org.ioopm.calculator.ast.*;
+import org.ioopm.calculator.parser.Constants;
 
 public class Test {
 
@@ -72,6 +73,11 @@ public class Test {
         ass.eval(env);
         Constant d = new Constant(8);
         test1.testEvaluating(d, ass, env);
+
+        Assignment f1 = new Assignment(new Constant(0), new Variable("k"));
+        f1.eval(env);
+        Assignment f = new Assignment(new Constant(0), new Variable("pi"));
+        f.eval(env);
 
     }
 }

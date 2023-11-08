@@ -1,5 +1,7 @@
 package org.ioopm.calculator.ast;
 
+import org.ioopm.calculator.parser.Constants;
+
 public class Assignment extends Binary {
     private SymbolicExpression lhs;
     private SymbolicExpression rhs;
@@ -18,7 +20,9 @@ public class Assignment extends Binary {
     @Override
     public SymbolicExpression eval(Environment vars) {
         SymbolicExpression lhs = this.lhs.eval(vars);
-        if (lhs.isConstant() && rhs.isVariable()) {
+        if (Constants.namedConstants.containsKey(this.rhs.getVariable())) {
+            throw new IllegalExpressionException("Error: cannot redefine named constant");
+        } else if (lhs.isConstant() && rhs.isVariable()) {
             vars.put(new Variable(rhs.getVariable()), lhs);
             return rhs.eval(vars);
         } else {
