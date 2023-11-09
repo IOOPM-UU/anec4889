@@ -1,7 +1,5 @@
 package org.ioopm.calculator.ast;
 
-import org.ioopm.calculator.parser.Constants;
-
 public class Assignment extends Binary {
     private SymbolicExpression lhs;
     private SymbolicExpression rhs;

@@ -12,9 +12,10 @@ public abstract class Calculator {
         final Environment vars = new Environment();
         SymbolicExpression result;
         int expressions = 0;
+        int fullyEvaluated = 0;
         Variable ans = new Variable("ans");
 
-        System.out.println("Welcome to the parser");
+        System.out.println("Welcome to the parser \n");
 
         while (true) {
             String input = System.console().readLine("Please enter an expression: ");
@@ -22,8 +23,9 @@ public abstract class Calculator {
             SymbolicExpression ss = parser.parse(input, vars);
             if (ss.isCommand()) {
                 if (ss instanceof Quit) {
-                    System.out.println("Thank you for using the parser");
+                    System.out.println("Thank you for using the parser \n");
                     System.out.println("Total expressions: " + expressions);
+                    System.out.println("Fully evaluated expressions: " + fullyEvaluated);
                     break;
                 } else if (ss instanceof Vars) {
                     vars.forEach((k, v) -> System.out.println(k + " = " + v));
@@ -34,8 +36,10 @@ public abstract class Calculator {
             } else {
                 result = ss.eval(vars);
                 new Assignment(result, ans).eval(vars);
-                System.out.println(result);
+                System.out.println(result + "\n");
                 expressions++;
+                if (result.isConstant())
+                    fullyEvaluated++;
             }
 
         }

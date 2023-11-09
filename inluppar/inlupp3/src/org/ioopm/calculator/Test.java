@@ -1,7 +1,6 @@
 package org.ioopm.calculator;
 
 import org.ioopm.calculator.ast.*;
-import org.ioopm.calculator.parser.Constants;
 
 public class Test {
 
