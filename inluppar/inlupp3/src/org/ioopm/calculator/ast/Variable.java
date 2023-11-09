@@ -14,15 +14,7 @@ public class Variable extends Atom {
 
     @Override
     public int hashCode() {
-        return this.getVariable().hashCode();
-    }
-
-    @Override
-    public SymbolicExpression eval(Environment vars) {
-        if (vars.containsKey(this)) {
-            return new Constant(vars.get(this).getValue());
-        }
-        return new Variable(this.identifier);
+        return this.identifier.hashCode();
     }
 
     @Override
@@ -39,7 +31,18 @@ public class Variable extends Atom {
     }
 
     public boolean equals(Variable other) {
-        return this.identifier == other.identifier;
+        return this.identifier.equals(other.identifier);
+    }
+
+    @Override
+    public SymbolicExpression eval(Environment vars) {
+        if (vars.containsKey(this)) {
+            if (vars.get(this).isConstant()) {
+                return new Constant(vars.get(this).getValue());
+            }
+            return vars.get(this);
+        }
+        return new Variable(this.identifier);
     }
 
     public String toString() {

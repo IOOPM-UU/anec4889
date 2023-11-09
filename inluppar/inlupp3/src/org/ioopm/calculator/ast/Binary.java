@@ -18,7 +18,7 @@ public abstract class Binary extends SymbolicExpression {
     }
 
     public boolean equals(Binary other) {
-        return this.lhs == other.lhs && this.rhs == other.rhs && this.getName() == other.getName();
+        return this.lhs.equals(other.lhs) && this.rhs.equals(other.rhs) && this.getName().equals(other.getName());
     }
 
     public String toString() {

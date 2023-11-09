@@ -22,7 +22,7 @@ public class Assignment extends Binary {
         SymbolicExpression lhs = this.lhs.eval(vars);
         if (Constants.namedConstants.containsKey(this.rhs.getVariable())) {
             throw new IllegalExpressionException("Error: cannot redefine named constant");
-        } else if (lhs.isConstant() && rhs.isVariable()) {
+        } else if (rhs.isVariable()) {
             vars.put(new Variable(rhs.getVariable()), lhs);
             return rhs.eval(vars);
         } else {

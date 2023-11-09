@@ -21,7 +21,7 @@ public abstract class Unary extends SymbolicExpression {
     }
 
     public boolean equals(Unary other) {
-        return this.argument == other.argument && this.getName() == other.getName();
+        return this.argument.equals(other.argument) && this.getName().equals(other.getName());
     }
 
     public String toString() {
