@@ -20,14 +20,14 @@ public class Assignment extends Binary {
     @Override
     public SymbolicExpression eval(Environment vars) {
         SymbolicExpression lhs = this.lhs.eval(vars);
-        if (Constants.namedConstants.containsKey(this.rhs.getVariable())) {
-            throw new IllegalExpressionException("Error: cannot redefine named constant");
+        if (this.rhs.isNamedConstant()) {
+            throw new IllegalExpressionException("Error: cannot redefine named constant '" + this.rhs + "'");
         } else if (rhs.isVariable()) {
             vars.put(new Variable(rhs.getVariable()), lhs);
             return rhs.eval(vars);
-        } else {
-            return new Assignment(lhs, rhs);
         }
+        return new Assignment(lhs, rhs);
+
     }
 
     @Override

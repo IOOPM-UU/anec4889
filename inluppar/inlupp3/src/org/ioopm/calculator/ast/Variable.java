@@ -1,5 +1,7 @@
 package org.ioopm.calculator.ast;
 
+import org.ioopm.calculator.parser.Constants;
+
 public class Variable extends Atom {
     private String identifier;
 

@@ -12,6 +12,7 @@ public abstract class Calculator {
         final Environment vars = new Environment();
         SymbolicExpression result;
         int expressions = 0;
+        Variable ans = new Variable("ans");
 
         System.out.println("Welcome to the parser");
 
@@ -32,9 +33,9 @@ public abstract class Calculator {
                 }
             } else {
                 result = ss.eval(vars);
+                new Assignment(result, ans).eval(vars);
                 System.out.println(result);
                 expressions++;
-                // System.out.println(result.toString());
             }
 
         }

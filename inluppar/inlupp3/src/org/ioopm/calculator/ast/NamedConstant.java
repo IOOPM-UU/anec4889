@@ -26,7 +26,7 @@ public class NamedConstant extends Atom {
 
     @Override
     public SymbolicExpression eval(Environment vars) {
-        return new NamedConstant(this.name, this.value);
+        return new Constant(value);
     }
 
     public boolean equals(Object other) {
@@ -38,7 +38,7 @@ public class NamedConstant extends Atom {
     }
 
     public boolean equals(NamedConstant other) {
-        return this.value == other.value && this.name == other.name;
+        return this.value == other.value && this.name.equals(other.name);
     }
 
     public String toString() {
