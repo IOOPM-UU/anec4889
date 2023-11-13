@@ -20,7 +20,7 @@ public class Exp extends Unary {
 
     @Override
     public String getName() {
-        return "^";
+        return "e^";
     }
 
     public String toString() {
