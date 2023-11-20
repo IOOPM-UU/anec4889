@@ -175,7 +175,7 @@ public class ParserTests {
         assertEquals("3.0 + 2.0", add(con(3), con(2)).toString());
         assertEquals("3.0 * 2.0", mul(con(3), con(2)).toString());
         assertEquals("(3.0 - x) / 2.0", div(sub(con(3), var("x")), con(2)).toString());
-        assertEquals("cos(x + 3.0)", cos(add(var("x"), con(3))).toString());
+        assertEquals("Cos(x + 3.0)", cos(add(var("x"), con(3))).toString());
     }
 
     @Test

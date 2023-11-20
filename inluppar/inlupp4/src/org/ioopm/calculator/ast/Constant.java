@@ -8,6 +8,11 @@ public class Constant extends Atom {
     }
 
     @Override
+    public SymbolicExpression accept(Visitor v) {
+        return v.visit(this);
+    }
+
+    @Override
     public boolean isConstant() {
         return true;
     }

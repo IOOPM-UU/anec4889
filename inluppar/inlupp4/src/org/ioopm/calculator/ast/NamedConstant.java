@@ -10,6 +10,11 @@ public class NamedConstant extends Atom {
     }
 
     @Override
+    public SymbolicExpression accept(Visitor v) {
+        return v.visit(this);
+    }
+
+    @Override
     public boolean isNamedConstant() {
         return true;
     }

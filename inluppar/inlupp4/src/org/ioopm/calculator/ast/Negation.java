@@ -9,6 +9,11 @@ public class Negation extends Unary {
     }
 
     @Override
+    public SymbolicExpression accept(Visitor v) {
+        return v.visit(this);
+    }
+
+    @Override
     public int getPriority() {
         return 100;
     }

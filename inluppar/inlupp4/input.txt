@@ -1,0 +1,20 @@
+2*(5-2)
+1/(2+8) = a
+2 = x = y
+(x+y=z) - (z-1)*(1=x)
+-sin(exp(a*a*10))
+ans
+-ans+2
+- - -x
+b
+1 = a
+a + b
+b + a = c
+2 = b
+c
+2*x = y
+Vars
+3**5 ++ x
+foo(x+y)
+1/0
+Quit

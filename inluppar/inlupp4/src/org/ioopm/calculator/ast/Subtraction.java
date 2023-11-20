@@ -11,6 +11,11 @@ public class Subtraction extends Binary {
     }
 
     @Override
+    public SymbolicExpression accept(Visitor v) {
+        return v.visit(this);
+    }
+
+    @Override
     public int getPriority() {
         return 50;
     }

@@ -1,8 +1,8 @@
 package org.ioopm.calculator.ast;
 
 public abstract class Binary extends SymbolicExpression {
-    private SymbolicExpression lhs = null;
-    private SymbolicExpression rhs = null;
+    SymbolicExpression lhs = null;
+    SymbolicExpression rhs = null;
 
     Binary(SymbolicExpression lhs, SymbolicExpression rhs) {
         this.lhs = lhs;

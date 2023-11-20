@@ -9,6 +9,11 @@ public class Cos extends Unary {
     }
 
     @Override
+    public SymbolicExpression accept(Visitor v) {
+        return v.visit(this);
+    }
+
+    @Override
     public SymbolicExpression eval(Environment vars) {
         SymbolicExpression arg = this.argument.eval(vars);
         if (arg.isConstant()) {

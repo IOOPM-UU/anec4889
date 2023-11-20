@@ -6,6 +6,11 @@ public class Clear extends Command {
         throw new RuntimeException("Commands may not be evaluated");
     }
 
+    @Override
+    public SymbolicExpression accept(Visitor v) {
+        return v.visit(this);
+    }
+
     private static final Clear theInstance = new Clear();
 
     private Clear() {

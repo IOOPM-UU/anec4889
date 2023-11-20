@@ -1,13 +1,18 @@
 package org.ioopm.calculator.ast;
 
 public class Addition extends Binary {
-    private SymbolicExpression lhs;
-    private SymbolicExpression rhs;
+    SymbolicExpression lhs;
+    SymbolicExpression rhs;
 
     public Addition(SymbolicExpression lhs, SymbolicExpression rhs) {
         super(lhs, rhs);
         this.lhs = lhs;
         this.rhs = rhs;
+    }
+
+    @Override
+    public SymbolicExpression accept(Visitor v) {
+        return v.visit(this);
     }
 
     @Override
