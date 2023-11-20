@@ -1,8 +1,8 @@
 package org.ioopm.calculator.ast;
 
 public class Division extends Binary {
-    private SymbolicExpression lhs;
-    private SymbolicExpression rhs;
+    SymbolicExpression lhs;
+    SymbolicExpression rhs;
 
     public Division(SymbolicExpression lhs, SymbolicExpression rhs) {
         super(lhs, rhs);
@@ -18,17 +18,6 @@ public class Division extends Binary {
     @Override
     public int getPriority() {
         return 100;
-    }
-
-    @Override
-    public SymbolicExpression eval(Environment vars) {
-        SymbolicExpression lhs = this.lhs.eval(vars);
-        SymbolicExpression rhs = this.rhs.eval(vars);
-        if (lhs.isConstant() && rhs.isConstant()) {
-            return new Constant(lhs.getValue() / rhs.getValue());
-        } else {
-            return new Division(lhs, rhs);
-        }
     }
 
     @Override

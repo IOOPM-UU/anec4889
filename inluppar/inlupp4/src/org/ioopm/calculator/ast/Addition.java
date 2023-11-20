@@ -21,17 +21,6 @@ public class Addition extends Binary {
     }
 
     @Override
-    public SymbolicExpression eval(Environment vars) {
-        SymbolicExpression rhs = this.rhs.eval(vars);
-        SymbolicExpression lhs = this.lhs.eval(vars);
-        if (lhs.isConstant() && rhs.isConstant()) {
-            return new Constant(lhs.getValue() + rhs.getValue());
-        } else {
-            return new Addition(lhs, rhs);
-        }
-    }
-
-    @Override
     public String getName() {
         return "+";
     }

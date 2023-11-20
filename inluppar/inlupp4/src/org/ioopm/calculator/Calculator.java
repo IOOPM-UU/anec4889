@@ -12,6 +12,9 @@ public abstract class Calculator {
     public static void main(String[] args) throws IOException {
         final CalculatorParser parser = new CalculatorParser();
         final Environment vars = new Environment();
+        final EvaluationVisitor evaluator = new EvaluationVisitor();
+        final NamedConstantChecker namedChecker = new NamedConstantChecker();
+        final ReassignmentChecker reassignChecker = new ReassignmentChecker();
         SymbolicExpression result;
         int expressions = 0;
         int fullyEvaluated = 0;
@@ -33,18 +36,21 @@ public abstract class Calculator {
                         System.out.println("Fully evaluated expressions: " + fullyEvaluated);
                         break;
                     } else if (ss instanceof Vars) {
-                        vars.forEach((k, v) -> System.out.println(k + " = " + v));
+                        System.out.println(vars.toString());
+                        // vars.forEach((k, v) -> System.out.println(k + " = " + v));
                     } else if (ss instanceof Clear) {
                         vars.clear();
                         System.out.println("Variables cleared");
                     }
                 } else {
-                    result = ss.eval(vars);
-                    new Assignment(result, ans).eval(vars);
-                    System.out.println(result + "\n");
-                    expressions++;
-                    if (result.isConstant())
-                        fullyEvaluated++;
+                    if (namedChecker.check(ss) && reassignChecker.check(ss)) {
+                        result = evaluator.evaluate(ss, vars);
+                        evaluator.evaluate(new Assignment(result, ans), vars);
+                        System.out.println(result + "\n");
+                        expressions++;
+                        if (result.isConstant())
+                            fullyEvaluated++;
+                    }
                 }
             } catch (IllegalExpressionException d) {
                 System.out.println(d.getMessage());

@@ -1,7 +1,7 @@
 package org.ioopm.calculator.ast;
 
 public class Cos extends Unary {
-    private SymbolicExpression argument;
+    SymbolicExpression argument;
 
     public Cos(SymbolicExpression argument) {
         super(argument);
@@ -11,16 +11,6 @@ public class Cos extends Unary {
     @Override
     public SymbolicExpression accept(Visitor v) {
         return v.visit(this);
-    }
-
-    @Override
-    public SymbolicExpression eval(Environment vars) {
-        SymbolicExpression arg = this.argument.eval(vars);
-        if (arg.isConstant()) {
-            return new Constant(Math.cos(arg.getValue()));
-        } else {
-            return new Cos(arg);
-        }
     }
 
     @Override

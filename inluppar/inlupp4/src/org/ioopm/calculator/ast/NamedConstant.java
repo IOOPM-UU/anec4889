@@ -29,11 +29,6 @@ public class NamedConstant extends Atom {
         return value;
     }
 
-    @Override
-    public SymbolicExpression eval(Environment vars) {
-        return new Constant(value);
-    }
-
     public boolean equals(Object other) {
         if (other instanceof NamedConstant) {
             return this.equals((NamedConstant) other);

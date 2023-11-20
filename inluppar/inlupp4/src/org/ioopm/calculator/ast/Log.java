@@ -1,7 +1,7 @@
 package org.ioopm.calculator.ast;
 
 public class Log extends Unary {
-    private SymbolicExpression argument;
+    SymbolicExpression argument;
 
     public Log(SymbolicExpression argument) {
         super(argument);
@@ -11,16 +11,6 @@ public class Log extends Unary {
     @Override
     public SymbolicExpression accept(Visitor v) {
         return v.visit(this);
-    }
-
-    @Override
-    public SymbolicExpression eval(Environment vars) {
-        SymbolicExpression arg = this.argument.eval(vars);
-        if (arg.isConstant()) {
-            return new Constant(Math.log(arg.getValue()));
-        } else {
-            return new Log(arg);
-        }
     }
 
     @Override

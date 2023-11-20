@@ -1,5 +1,7 @@
 package org.ioopm.calculator.ast;
 
+//import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class EvaluationVisitor implements Visitor {
     private Environment vars = null;
 
@@ -19,97 +21,132 @@ public class EvaluationVisitor implements Visitor {
     }
 
     public SymbolicExpression visit(Assignment n) {
-        SymbolicExpression lhs = n.lhs.eval(vars);
+        SymbolicExpression lhs = n.lhs.accept(this);
         if (n.rhs.isNamedConstant()) {
             throw new IllegalExpressionException("Error: cannot redefine named constant '" + n.rhs + "'");
         } else if (n.rhs.isVariable()) {
             vars.put(new Variable(n.rhs.getVariable()), lhs);
-            return n.rhs.eval(vars);
+            return n.rhs.accept(this);
         }
         return new Assignment(lhs, n.rhs);
     }
 
     @Override
     public SymbolicExpression visit(Clear n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        throw new RuntimeException("Commands may not be evaluated");
     }
 
     @Override
     public SymbolicExpression visit(Constant n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        return new Constant(n.getValue());
     }
 
     @Override
     public SymbolicExpression visit(Cos n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        SymbolicExpression arg = n.argument.accept(this);
+        if (arg.isConstant()) {
+            return new Constant(Math.cos(arg.getValue()));
+        } else {
+            return new Cos(arg);
+        }
     }
 
     @Override
     public SymbolicExpression visit(Division n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        SymbolicExpression lhs = n.lhs.accept(this);
+        SymbolicExpression rhs = n.rhs.accept(this);
+        if (lhs.isConstant() && rhs.isConstant()) {
+            return new Constant(lhs.getValue() / rhs.getValue());
+        } else {
+            return new Division(lhs, rhs);
+        }
     }
 
     @Override
     public SymbolicExpression visit(Exp n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        SymbolicExpression arg = n.argument.accept(this);
+        if (arg.isConstant()) {
+            return new Constant(Math.exp(arg.getValue()));
+        } else {
+            return new Exp(arg);
+        }
     }
 
     @Override
     public SymbolicExpression visit(Log n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        SymbolicExpression arg = n.argument.accept(this);
+        if (arg.isConstant()) {
+            return new Constant(Math.log(arg.getValue()));
+        } else {
+            return new Log(arg);
+        }
     }
 
     @Override
     public SymbolicExpression visit(Multiplication n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        SymbolicExpression lhs = n.lhs.accept(this);
+        SymbolicExpression rhs = n.rhs.accept(this);
+        if (lhs.isConstant() && rhs.isConstant()) {
+            return new Constant(lhs.getValue() * rhs.getValue());
+        } else {
+            return new Multiplication(lhs, rhs);
+        }
     }
 
     @Override
     public SymbolicExpression visit(Negation n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        SymbolicExpression arg = n.argument.accept(this);
+        if (arg.isConstant()) {
+            return new Constant(arg.getValue() * (-1));
+        } else {
+            return new Negation(arg);
+        }
     }
 
     @Override
     public SymbolicExpression visit(Quit n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        throw new RuntimeException("Commands may not be evaluated");
     }
 
     @Override
     public SymbolicExpression visit(Sin n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        SymbolicExpression arg = n.argument.accept(this);
+        if (arg.isConstant()) {
+            return new Constant(Math.sin(arg.getValue()));
+        } else {
+            return new Sin(arg);
+        }
     }
 
     @Override
     public SymbolicExpression visit(Subtraction n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        SymbolicExpression lhs = n.lhs.accept(this);
+        SymbolicExpression rhs = n.rhs.accept(this);
+        if (lhs.isConstant() && rhs.isConstant()) {
+            return new Constant(lhs.getValue() - rhs.getValue());
+        } else {
+            return new Subtraction(lhs, rhs);
+        }
     }
 
     @Override
     public SymbolicExpression visit(Variable n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        if (vars.containsKey(n)) {
+            if (vars.get(n).isConstant()) {
+                return new Constant(vars.get(n).getValue());
+            }
+            return vars.get(n);
+        }
+        return new Variable(n.identifier);
     }
 
     @Override
     public SymbolicExpression visit(Vars n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        throw new RuntimeException("Commands may not be evaluated");
     }
 
     @Override
     public SymbolicExpression visit(NamedConstant n) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        return new Constant(n.getValue());
     }
 }

@@ -39,6 +39,4 @@ public abstract class SymbolicExpression {
     }
 
     public abstract int getPriority();
-
-    public abstract SymbolicExpression eval(Environment vars);
 }

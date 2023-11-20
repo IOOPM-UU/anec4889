@@ -21,23 +21,7 @@ public class Assignment extends Binary {
     }
 
     @Override
-    public SymbolicExpression eval(Environment vars) {
-        SymbolicExpression lhs = this.lhs.eval(vars);
-        if (this.rhs.isNamedConstant()) {
-            throw new IllegalExpressionException("Error: cannot redefine named constant '" + this.rhs + "'");
-        } else if (rhs.isVariable()) {
-            vars.put(new Variable(rhs.getVariable()), lhs);
-            return rhs.eval(vars);
-        }
-        return new Assignment(lhs, rhs);
-    }
-
-    @Override
     public String getName() {
         return "=";
-    }
-
-    public String toString() {
-        return super.toString();
     }
 }

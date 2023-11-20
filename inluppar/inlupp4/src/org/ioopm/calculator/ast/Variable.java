@@ -1,7 +1,7 @@
 package org.ioopm.calculator.ast;
 
-public class Variable extends Atom {
-    private String identifier;
+public class Variable extends Atom implements Comparable<Variable> {
+    String identifier;
 
     public Variable(String identifier) {
         this.identifier = identifier;
@@ -39,18 +39,12 @@ public class Variable extends Atom {
         return this.identifier.equals(other.identifier);
     }
 
-    @Override
-    public SymbolicExpression eval(Environment vars) {
-        if (vars.containsKey(this)) {
-            if (vars.get(this).isConstant()) {
-                return new Constant(vars.get(this).getValue());
-            }
-            return vars.get(this);
-        }
-        return new Variable(this.identifier);
-    }
-
     public String toString() {
         return String.valueOf(identifier);
+    }
+
+    @Override
+    public int compareTo(Variable other) {
+        return this.identifier.compareTo(other.identifier);
     }
 }
