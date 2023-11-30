@@ -2,11 +2,13 @@ package org.ioopm.calculator.ast;
 
 public abstract class SymbolicExpression {
 
-    // TODO: Implement isUnary();
-
     public abstract SymbolicExpression accept(Visitor v);
 
     public boolean isConstant() {
+        return false;
+    }
+
+    public boolean isUnary() {
         return false;
     }
 

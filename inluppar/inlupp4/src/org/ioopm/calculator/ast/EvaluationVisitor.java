@@ -22,8 +22,9 @@ public class EvaluationVisitor implements Visitor {
 
     public SymbolicExpression visit(Assignment n) {
         SymbolicExpression lhs = n.lhs.accept(this);
-        if (n.rhs.isNamedConstant()) {
-            throw new IllegalExpressionException("Error: cannot redefine named constant '" + n.rhs + "'");
+        if (n.rhs.isUnary()) {
+            System.out.println("ndjn");
+            throw new IllegalExpressionException("Error: cannot assign unary operator " + n.rhs.getName());
         } else if (n.rhs.isVariable()) {
             vars.put(new Variable(n.rhs.getVariable()), lhs);
             return n.rhs.accept(this);
@@ -148,5 +149,26 @@ public class EvaluationVisitor implements Visitor {
     @Override
     public SymbolicExpression visit(NamedConstant n) {
         return new Constant(n.getValue());
+    }
+
+    @Override
+    public SymbolicExpression visit(Scope n) {
+        Environment temp = this.vars;
+        this.vars = (Environment) temp.clone();
+        SymbolicExpression arg = n.arg.accept(this);
+
+        this.vars = temp;
+        return arg;
+    }
+
+    @Override
+    public SymbolicExpression visit(Conditional n) {
+        n.idLhs.accept(this);
+        n.idRhs.accept(this);
+        n.op.accept(this);
+        n.scopeLhs.accept(this);
+        n.scopeRhs.accept(this);
+
+        return null;
     }
 }

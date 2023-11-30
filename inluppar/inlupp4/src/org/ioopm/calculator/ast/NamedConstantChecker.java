@@ -108,4 +108,14 @@ public class NamedConstantChecker implements Visitor {
     public SymbolicExpression visit(NamedConstant n) {
         return null;
     }
+
+    @Override
+    public SymbolicExpression visit(Scope n) {
+        return null;
+    }
+
+    @Override
+    public SymbolicExpression visit(Conditional n) {
+        return null;
+    }
 }

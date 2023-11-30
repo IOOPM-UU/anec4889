@@ -4,11 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.ioopm.calculator.ast.*;
@@ -18,11 +14,13 @@ import org.ioopm.calculator.parser.SyntaxErrorException;
 public class ParserTests {
     static CalculatorParser parser;
     static Environment vars;
+    static EvaluationVisitor evaluator;
 
     @BeforeAll
     public static void initParser() {
         parser = new CalculatorParser();
         vars = new Environment();
+        evaluator = new EvaluationVisitor();
     }
 
     static SymbolicExpression parse(String input) throws IOException {
@@ -131,7 +129,7 @@ public class ParserTests {
     @Test
     void testGetValue() {
         assertEquals(3, con(3).getValue());
-        assertEquals(3, asg(con(3), var("y")).eval(vars).getValue());
+        assertEquals(3, evaluator.evaluate(asg(con(3), var("y")), vars).getValue());
         assertThrows(RuntimeException.class, () -> {
             var("x").getValue();
         });
@@ -142,7 +140,7 @@ public class ParserTests {
     void testIsConstant() {
         assertFalse(var("x").isConstant());
         assertTrue(con(3).isConstant());
-        assertTrue(asg(con(3), var("y")).eval(vars).isConstant());
+        assertTrue(evaluator.evaluate(asg(con(3), var("y")), vars).isConstant());
     }
 
     @Test
@@ -180,7 +178,7 @@ public class ParserTests {
 
     @Test
     void testToEquals() {
-        assertTrue(cos(con(5)).equals(cos(add(con(3), con(2)).eval(vars))));
+        assertTrue(cos(con(5)).equals(cos(evaluator.evaluate(add(con(3), con(2)), vars))));
         assertTrue(mul(var("x"), con(3)).equals(mul(var("x"), con(3))));
         assertTrue(var("x").equals(var("x")));
         assertFalse(var("x").equals(var("y")));
@@ -188,11 +186,11 @@ public class ParserTests {
 
     @Test
     void testEval() throws IOException {
-        assertEquals(add(var("x"), con(3)), add(var("x"), con(3)).eval(vars));
-        assertEquals(con(5), add(con(2), con(3)).eval(vars));
-        assertEquals(con(3), asg(con(3), var("x")).eval(vars));
+        assertEquals(add(var("x"), con(3)), evaluator.evaluate(add(var("x"), con(3)), vars));
+        assertEquals(con(5), evaluator.evaluate(add(con(2), con(3)), vars));
+        assertEquals(con(3), evaluator.evaluate(asg(con(3), var("x")), vars));
         assertThrows(RuntimeException.class, () -> {
-            parse("Quit").eval(vars);
+            evaluator.evaluate(parse("Quit"), vars);
         });
     }
 }

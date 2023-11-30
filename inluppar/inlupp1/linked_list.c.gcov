@@ -1,0 +1,409 @@
+        -:    0:Source:linked_list.c
+        -:    1:#include "linked_list.h"
+        -:    2:#include "iterator.h"
+        -:    3:#include <stdlib.h>
+        -:    4:#include <stdio.h>
+        -:    5:#include <math.h>
+        -:    6:#include <stdbool.h>
+        -:    7:#include <string.h>
+        -:    8:#include <ctype.h>
+        -:    9:#include <time.h>
+        -:   10:#include <assert.h>
+        -:   11:#include <stddef.h>
+        -:   12:
+        -:   13:/**
+        -:   14: * @file simple_linked_list.c
+        -:   15: * @author Elias Castegren
+        -:   16: * @date 1 Sep 2021
+        -:   17: * @brief A simple linked list that implements parts of the interface
+        -:   18: * of `linked_list.h`.
+        -:   19: */
+        -:   20:
+        -:   21:// This is a macro that is used in the functions that are not implemented,
+        -:   22:// to have them fail at runtime.
+        -:   23:#define NOT_SUPPORTED()                                                            \
+        -:   24:    do                                                                             \
+        -:   25:    {                                                                              \
+        -:   26:        fprintf(stderr, "The simple linked list does not support %s\n", __func__); \
+        -:   27:        assert(false);                                                             \
+        -:   28:    } while (0)
+        -:   29:
+function ioopm_linked_list_create called 24 returned 100% blocks executed 100%
+       24:   30:ioopm_list_t *ioopm_linked_list_create(ioopm_eq_function eq_fun)
+        -:   31:{
+       24:   32:    ioopm_list_t *result = calloc(1, sizeof(struct list));
+        -:   33:
+       24:   34:    if (result)
+       24:   34-block  0
+branch  0 taken 24 (fallthrough)
+branch  1 taken 0
+        -:   35:    {
+        -:   36:        // Initiate list values
+       24:   37:        result->head = result->last = calloc(1, sizeof(link_t));
+       24:   38:        result->size = 0;
+       24:   39:        result->eq = eq_fun;
+       24:   39-block  0
+unconditional  0 taken 24
+        -:   40:    }
+        -:   41:
+       24:   42:    return result;
+       24:   42-block  0
+unconditional  0 taken 24
+        -:   43:}
+        -:   44:
+function ioopm_linked_list_destroy called 24 returned 100% blocks executed 100%
+       24:   45:void ioopm_linked_list_destroy(ioopm_list_t *list)
+        -:   46:{
+       24:   47:    ioopm_linked_list_clear(list);
+       24:   47-block  0
+call    0 returned 24
+       24:   48:    free(list);
+       24:   49:}
+        -:   50:
+function link_create called 76 returned 100% blocks executed 100%
+       76:   51:link_t *link_create(elem_t element, link_t *next)
+        -:   52:{
+       76:   53:    link_t *result = malloc(sizeof(struct link));
+        -:   54:
+       76:   55:    if (result)
+       76:   55-block  0
+branch  0 taken 76 (fallthrough)
+branch  1 taken 0
+        -:   56:    {
+       76:   57:        result->element = element;
+       76:   58:        result->next = next;
+       76:   58-block  0
+unconditional  0 taken 76
+        -:   59:    }
+       76:   60:    return result;
+       76:   60-block  0
+unconditional  0 taken 76
+        -:   61:}
+        -:   62:
+function get_previous_link called 158 returned 100% blocks executed 100%
+      158:   63:link_t *get_previous_link(ioopm_list_t *list, int index)
+        -:   64:{
+      158:   65:    link_t *prev = list->head;
+      440:   66:    for (int i = 0; i < index; i++)
+      158:   66-block  0
+unconditional  0 taken 158
+      440:   66-block  1
+branch  1 taken 282
+branch  2 taken 158 (fallthrough)
+        -:   67:    {
+      282:   68:        prev = prev->next;
+      282:   68-block  0
+unconditional  0 taken 282
+        -:   69:    }
+      158:   70:    return prev;
+      158:   70-block  0
+unconditional  0 taken 158
+        -:   71:}
+        -:   72:
+function ioopm_linked_list_append called 52 returned 100% blocks executed 100%
+       52:   73:void ioopm_linked_list_append(ioopm_list_t *list, elem_t element)
+        -:   74:{
+       52:   75:    link_t *new_link = link_create(element, NULL);
+       52:   75-block  0
+call    0 returned 52
+       52:   76:    list->last->next = new_link;
+       52:   77:    list->last = new_link;
+       52:   78:    list->size++;
+       52:   79:}
+        -:   80:
+function ioopm_linked_list_prepend called 16 returned 100% blocks executed 100%
+       16:   81:void ioopm_linked_list_prepend(ioopm_list_t *list, elem_t element)
+        -:   82:{
+       16:   83:    list->head->next = link_create(element, list->head->next);
+       16:   83-block  0
+call    0 returned 16
+       16:   84:    if (ioopm_linked_list_size(list) == 1)
+call    0 returned 16
+branch  1 taken 6 (fallthrough)
+branch  2 taken 10
+        -:   85:    {
+        6:   86:        list->last = list->head->next;
+        6:   86-block  0
+unconditional  0 taken 6
+        -:   87:    }
+       16:   88:    list->size++;
+       16:   89:}
+        -:   90:
+function ioopm_linked_list_insert called 14 returned 100% blocks executed 100%
+       14:   91:void ioopm_linked_list_insert(ioopm_list_t *list, int index, elem_t element)
+        -:   92:{
+       14:   93:    if (index == 0)
+       14:   93-block  0
+branch  0 taken 4 (fallthrough)
+branch  1 taken 10
+        -:   94:    {
+        4:   95:        ioopm_linked_list_prepend(list, element);
+        4:   95-block  0
+call    0 returned 4
+unconditional  1 taken 4
+        -:   96:    }
+       10:   97:    else if (ioopm_linked_list_size(list) == index)
+       10:   97-block  0
+call    0 returned 10
+branch  1 taken 2 (fallthrough)
+branch  2 taken 8
+        -:   98:    {
+        2:   99:        ioopm_linked_list_append(list, element);
+        2:   99-block  0
+call    0 returned 2
+unconditional  1 taken 2
+        -:  100:    }
+        -:  101:    else
+        -:  102:    {
+        8:  103:        link_t *prev = get_previous_link(list, index);
+        8:  103-block  0
+call    0 returned 8
+        8:  104:        prev->next = link_create(element, prev->next);
+call    0 returned 8
+        8:  105:        list->size++;
+unconditional  0 taken 8
+        -:  106:    }
+       14:  107:}
+        -:  108:
+function ioopm_linked_list_remove called 12 returned 100% blocks executed 100%
+       12:  109:elem_t ioopm_linked_list_remove(ioopm_list_t *list, int index)
+        -:  110:{
+       12:  111:    if (index == 0)
+       12:  111-block  0
+branch  0 taken 4 (fallthrough)
+branch  1 taken 8
+        -:  112:    {
+        4:  113:        link_t *tmp = list->head->next;
+        4:  114:        elem_t element = tmp->element;
+        4:  115:        list->head->next = tmp->next;
+        4:  116:        free(tmp);
+        4:  117:        list->size--;
+        4:  118:        return element;
+        4:  118-block  0
+unconditional  0 taken 4
+        -:  119:    }
+        -:  120:
+        8:  121:    link_t *prev = get_previous_link(list, index);
+        8:  121-block  0
+call    0 returned 8
+        8:  122:    link_t *current = prev->next;
+        -:  123:
+        8:  124:    prev->next = current->next;
+        8:  125:    elem_t element = current->element;
+        8:  126:    free(current);
+        8:  127:    if (index == ioopm_linked_list_size(list) - 1)
+call    0 returned 8
+branch  1 taken 4 (fallthrough)
+branch  2 taken 4
+        -:  128:    {
+        4:  129:        list->last = prev;
+        4:  129-block  0
+unconditional  0 taken 4
+        -:  130:    }
+        8:  131:    list->size--;
+        8:  132:    return element;
+        8:  132-block  0
+unconditional  0 taken 8
+        -:  133:}
+        -:  134:
+function ioopm_linked_list_get called 142 returned 100% blocks executed 100%
+      142:  135:elem_t ioopm_linked_list_get(ioopm_list_t *list, int index)
+        -:  136:{
+      142:  137:    link_t *prev = get_previous_link(list, index);
+      142:  137-block  0
+call    0 returned 142
+      142:  138:    return prev->next->element;
+unconditional  0 taken 142
+        -:  139:}
+        -:  140:
+function ioopm_linked_list_contains called 22 returned 100% blocks executed 100%
+       22:  141:bool ioopm_linked_list_contains(ioopm_list_t *list, elem_t element)
+        -:  142:{
+       22:  143:    link_t *cursor = list->head->next;
+       56:  144:    while (cursor)
+       22:  144-block  0
+unconditional  0 taken 22
+       56:  144-block  1
+branch  1 taken 50
+branch  2 taken 6 (fallthrough)
+        -:  145:    {
+       50:  146:        if (list->eq(cursor->element, element))
+       50:  146-block  0
+call    0 returned 50
+branch  1 taken 16 (fallthrough)
+branch  2 taken 34
+        -:  147:        {
+       16:  148:            return true;
+       16:  148-block  0
+unconditional  0 taken 16
+        -:  149:        }
+       34:  150:        cursor = cursor->next;
+       34:  150-block  0
+unconditional  0 taken 34
+        -:  151:    }
+        6:  152:    return false;
+        6:  152-block  0
+unconditional  0 taken 6
+        -:  153:}
+        -:  154:
+function ioopm_linked_list_size called 40 returned 100% blocks executed 100%
+       40:  155:size_t ioopm_linked_list_size(ioopm_list_t *list)
+        -:  156:{
+       40:  157:    return list->size;
+       40:  157-block  0
+unconditional  0 taken 40
+        -:  158:}
+        -:  159:
+function ioopm_linked_list_is_empty called 4 returned 100% blocks executed 100%
+        4:  160:bool ioopm_linked_list_is_empty(ioopm_list_t *list)
+        -:  161:{
+        4:  162:    return list->size == 0;
+        4:  162-block  0
+unconditional  0 taken 4
+        -:  163:}
+        -:  164:
+function ioopm_linked_list_clear called 24 returned 100% blocks executed 100%
+       24:  165:void ioopm_linked_list_clear(ioopm_list_t *list)
+        -:  166:{
+       24:  167:    link_t *current = list->head;
+      112:  168:    while (current)
+       24:  168-block  0
+unconditional  0 taken 24
+      112:  168-block  1
+branch  1 taken 88
+branch  2 taken 24 (fallthrough)
+        -:  169:    {
+       88:  170:        link_t *tmp = current;
+       88:  171:        current = current->next;
+       88:  172:        free(tmp);
+       88:  172-block  0
+unconditional  0 taken 88
+        -:  173:    }
+       24:  174:}
+        -:  175:
+function ioopm_linked_list_all called 4 returned 100% blocks executed 100%
+        4:  176:bool ioopm_linked_list_all(ioopm_list_t *list, ioopm_int_predicate prop, elem_t extra)
+        -:  177:{
+        4:  178:    link_t *cursor = list->head->next;
+        8:  179:    while (cursor)
+        4:  179-block  0
+unconditional  0 taken 4
+        8:  179-block  1
+branch  1 taken 6
+branch  2 taken 2 (fallthrough)
+        -:  180:    {
+        6:  181:        if (!prop(cursor->element, extra))
+        6:  181-block  0
+call    0 returned 6
+branch  1 taken 2 (fallthrough)
+branch  2 taken 4
+        -:  182:        {
+        2:  183:            return false;
+        2:  183-block  0
+unconditional  0 taken 2
+        -:  184:        }
+        4:  185:        cursor = cursor->next;
+        4:  185-block  0
+unconditional  0 taken 4
+        -:  186:    }
+        2:  187:    return true;
+        2:  187-block  0
+unconditional  0 taken 2
+        -:  188:}
+        -:  189:
+function ioopm_linked_list_any called 4 returned 100% blocks executed 100%
+        4:  190:bool ioopm_linked_list_any(ioopm_list_t *list, ioopm_int_predicate prop, elem_t extra)
+        -:  191:{
+        4:  192:    link_t *cursor = list->head->next;
+       10:  193:    while (cursor)
+        4:  193-block  0
+unconditional  0 taken 4
+       10:  193-block  1
+branch  1 taken 8
+branch  2 taken 2 (fallthrough)
+        -:  194:    {
+        8:  195:        if (prop(cursor->element, extra))
+        8:  195-block  0
+call    0 returned 8
+branch  1 taken 2 (fallthrough)
+branch  2 taken 6
+        -:  196:        {
+        2:  197:            return true;
+        2:  197-block  0
+unconditional  0 taken 2
+        -:  198:        }
+        6:  199:        cursor = cursor->next;
+        6:  199-block  0
+unconditional  0 taken 6
+        -:  200:    }
+        2:  201:    return false;
+        2:  201-block  0
+unconditional  0 taken 2
+        -:  202:}
+        -:  203:
+function ioopm_linked_list_apply_to_all called 2 returned 100% blocks executed 100%
+        2:  204:void ioopm_linked_list_apply_to_all(ioopm_list_t *list, ioopm_apply_int_function fun, elem_t extra)
+        -:  205:{
+        2:  206:    link_t *cursor = list->head->next;
+        6:  207:    while (cursor)
+        2:  207-block  0
+unconditional  0 taken 2
+        6:  207-block  1
+branch  1 taken 4
+branch  2 taken 2 (fallthrough)
+        -:  208:    {
+        4:  209:        fun(&(cursor->element), extra);
+        4:  209-block  0
+call    0 returned 4
+        4:  210:        cursor = cursor->next;
+unconditional  0 taken 4
+        -:  211:    }
+        2:  212:}
+        -:  213:
+function ioopm_list_iterator called 8 returned 100% blocks executed 100%
+        8:  214:ioopm_list_iterator_t *ioopm_list_iterator(ioopm_list_t *list)
+        -:  215:{
+        8:  216:    ioopm_list_iterator_t *iter = malloc(sizeof(ioopm_list_iterator_t));
+        8:  217:    iter->current = list->head;
+        8:  218:    iter->list = list;
+        8:  219:    return iter;
+        8:  219-block  0
+unconditional  0 taken 8
+        -:  220:}
+        -:  221:
+function ioopm_iterator_has_next called 4 returned 100% blocks executed 100%
+        4:  222:bool ioopm_iterator_has_next(ioopm_list_iterator_t *iter)
+        -:  223:{
+        4:  224:    return iter->current->next != NULL;
+        4:  224-block  0
+unconditional  0 taken 4
+        -:  225:}
+        -:  226:
+function ioopm_iterator_next called 12 returned 100% blocks executed 100%
+       12:  227:elem_t ioopm_iterator_next(ioopm_list_iterator_t *iter)
+        -:  228:{
+       12:  229:    iter->current = iter->current->next;
+       12:  230:    return iter->current->element;
+       12:  230-block  0
+unconditional  0 taken 12
+        -:  231:}
+        -:  232:
+function ioopm_iterator_reset called 2 returned 100% blocks executed 100%
+        2:  233:void ioopm_iterator_reset(ioopm_list_iterator_t *iter)
+        -:  234:{
+        2:  235:    iter->current = iter->list->head;
+        2:  236:}
+        -:  237:
+function ioopm_iterator_current called 8 returned 100% blocks executed 100%
+        8:  238:elem_t ioopm_iterator_current(ioopm_list_iterator_t *iter)
+        -:  239:{
+        8:  240:    return iter->current->element;
+        8:  240-block  0
+unconditional  0 taken 8
+        -:  241:}
+        -:  242:
+function ioopm_iterator_destroy called 8 returned 100% blocks executed 100%
+        8:  243:void ioopm_iterator_destroy(ioopm_list_iterator_t *iter)
+        -:  244:{
+        8:  245:    free(iter);
+        8:  246:}

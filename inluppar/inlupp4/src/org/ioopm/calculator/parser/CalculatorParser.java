@@ -25,13 +25,19 @@ public class CalculatorParser {
     private static String LOG = "Log";
     private static String EXP = "Exp";
     private static char ASSIGNMENT = '=';
+    private static String lt = "<";
+    private static String gt = ">";
+    private static String lte = "<=";
+    private static String gte = ">=";
+    private static String eq = "==";
 
     // unallowerdVars is used to check if variabel name that we
     // want to assign new meaning to is a valid name eg 3 = Quit
     // or 10 + x = L is not allowed
     private final ArrayList<String> unallowedVars = new ArrayList<String>(Arrays.asList("Quit",
             "Vars",
-            "Clear"));
+            "Clear",
+            "if"));
 
     /**
      * Used to parse the inputted string by the Calculator program
@@ -67,9 +73,10 @@ public class CalculatorParser {
         }
 
         if (this.st.ttype == this.st.TT_WORD) { // vilken typ det senaste tecken vi läste in hade.
-            if (this.st.sval.equals("Quit") || this.st.sval.equals("Vars") || this.st.sval.equals("Clear")) { // sval =
-                                                                                                              // string
-                                                                                                              // Variable
+            if (this.st.sval.equals("Quit") || this.st.sval.equals("Vars") || this.st.sval.equals("Clear")
+                    || this.st.sval.equals("if")) { // sval =
+                // string
+                // Variable
                 result = command();
             } else {
                 result = assignment(); // går vidare med uttrycket.
@@ -99,8 +106,10 @@ public class CalculatorParser {
             return Quit.instance();
         } else if (this.st.sval.equals("Clear")) {
             return Clear.instance();
-        } else {
+        } else if (this.st.sval.equals("Vars")) {
             return Vars.instance();
+        } else {
+            return conditional();
         }
     }
 
@@ -235,6 +244,12 @@ public class CalculatorParser {
             if (this.st.nextToken() != ')') {
                 throw new SyntaxErrorException("expected ')'");
             }
+        } else if (this.st.ttype == '{') {
+            this.st.nextToken();
+            result = new Scope(assignment());
+            if (this.st.nextToken() != '}') {
+                throw new SyntaxErrorException("expected '}'");
+            }
         } else if (this.st.ttype == NEGATION) {
             result = unary();
         } else if (this.st.ttype == this.st.TT_WORD) {
@@ -299,4 +314,35 @@ public class CalculatorParser {
             throw new SyntaxErrorException("Error: Expected number");
         }
     }
+
+    private SymbolicExpression conditional() throws IOException {
+        boolean ifElse = false;
+        this.st.nextToken();
+
+        SymbolicExpression lhs = primary();
+        this.st.nextToken();
+        if (this.st.sval.equals(lt)) {
+            ifElse = lhs.getValue() < primary().getValue();
+        } else if (this.st.sval.equals(gt)) {
+            ifElse = lhs.getValue() > primary().getValue();
+        } else if (this.st.sval.equals(lte)) {
+            ifElse = lhs.getValue() <= primary().getValue();
+        } else if (this.st.sval.equals(gte)) {
+            ifElse = lhs.getValue() >= primary().getValue();
+        } else if (this.st.sval.equals(eq)) {
+            ifElse = lhs.getValue() == primary().getValue();
+        } else {
+            throw new SyntaxErrorException("Error: Not correctly formated");
+        }
+        this.st.nextToken();
+        if (ifElse) {
+            return primary();
+        } else {
+            this.st.nextToken();
+            this.st.nextToken();
+            return primary();
+        }
+
+    }
+
 }

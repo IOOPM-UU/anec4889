@@ -8,6 +8,11 @@ public abstract class Unary extends SymbolicExpression {
     }
 
     @Override
+    public boolean isUnary() {
+        return true;
+    }
+
+    @Override
     public int getPriority() {
         return 150;
     }

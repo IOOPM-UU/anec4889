@@ -12,7 +12,7 @@
 
 /**
  * @file simple_linked_list.c
- * @author Elias Castegren
+ * @author Anton Eckervald
  * @date 1 Sep 2021
  * @brief A simple linked list that implements parts of the interface
  * of `linked_list.h`.

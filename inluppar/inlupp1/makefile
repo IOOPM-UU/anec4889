@@ -11,7 +11,7 @@ CUNIT_LINK     = -lcunit
 test: hash_table.o linked_list.o hash_table_test.o
 	$(C_COMPILER) $(C_LINK_OPTIONS) $^ -o $@ $(CUNIT_LINK)
 
-debug: hash_table.c linked_list.c hash_table_test.c
+debug: hash_table.o linked_list.o hash_table_test.o
 	gcc -Wall -g $^ -o test -lcunit
 	@gdb ./test freq-count/small.txt
 
@@ -20,12 +20,12 @@ memtest: test
 
 covtest: test
 	@./test
-	gcov -abcfu hash_table.c linked_list.c hash_table_test.o
+	gcov -abcfu hash_table.o linked_list.o hash_table_test.o
 
 freqtest: hash_table.o linked_list.o freq-count.o
 	$(C_COMPILER) $(C_LINK_OPTIONS) $^ -o $@ $(CUNIT_LINK)
 
-freqdebug: hash_table.c linked_list.c freq-count.c
+freqdebug: hash_table.o linked_list.o freq-count.o
 	gcc -Wall -g $^ -o freqtest -lcunit
 	@gdb ./freqtest freq-count/small.txt
 
@@ -34,7 +34,7 @@ freqmem: freqtest
 
 freqcov: freqtest
 	@./freqtest
-	gcov -abcfu hash_table.c linked_list.c freq-count.o
+	gcov -abcfu hash_table.o linked_list.o freq-count.o
 
 clean:
 	rm -f *.o *.gcno *.gcda *.gcov test

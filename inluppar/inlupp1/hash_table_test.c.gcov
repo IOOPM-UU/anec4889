@@ -1,0 +1,1040 @@
+        -:    0:Source:hash_table_test.c
+        -:    1:#include <CUnit/Basic.h>
+        -:    2:#include "hash_table.h"
+        -:    3:#include <stdlib.h>
+        -:    4:#include <stdio.h>
+        -:    5:#include <math.h>
+        -:    6:#include <stdbool.h>
+        -:    7:#include <string.h>
+        -:    8:#include <ctype.h>
+        -:    9:#include <time.h>
+        -:   10:#include <assert.h>
+        -:   11:#include "linked_list.h"
+        -:   12:#include "iterator.h"
+        -:   13:#include "common.h"
+        -:   14:
+function key_eq called 160 returned 100% blocks executed 100%
+      160:   15:static bool key_eq(elem_t a, elem_t b)
+        -:   16:{
+      160:   17:    return a.i == b.i;
+      160:   17-block  0
+unconditional  0 taken 160
+        -:   18:}
+function value_eq called 4 returned 100% blocks executed 100%
+        4:   19:static bool value_eq(elem_t a, elem_t b)
+        -:   20:{
+        4:   21:    return strcmp(a.p, b.p) == 0;
+        4:   21-block  0
+unconditional  0 taken 4
+        -:   22:}
+        -:   23:
+function value_equiv_any called 4 returned 100% blocks executed 100%
+        4:   24:static bool value_equiv_any(elem_t key_ignored, elem_t value, elem_t x)
+        -:   25:{
+        -:   26:    elem_t other_value_ptr;
+        4:   27:    other_value_ptr.p = x.p;
+        4:   28:    return strcmp(value.p, other_value_ptr.p) == 0;
+        4:   28-block  0
+unconditional  0 taken 4
+        -:   29:}
+        -:   30:
+function init_suite called 2 returned 100% blocks executed 100%
+        2:   31:int init_suite(void)
+        -:   32:{
+        -:   33:    // Change this function if you want to do something *before* you
+        -:   34:    // run a test suite
+        2:   35:    return 0;
+        2:   35-block  0
+unconditional  0 taken 2
+        -:   36:}
+        -:   37:
+function clean_suite called 2 returned 100% blocks executed 100%
+        2:   38:int clean_suite(void)
+        -:   39:{
+        -:   40:    // Change this function if you want to do something *after* you
+        -:   41:    // run a test suite
+        2:   42:    return 0;
+        2:   42-block  0
+unconditional  0 taken 2
+        -:   43:}
+        -:   44:
+function test_create_destroy called 2 returned 100% blocks executed 100%
+        2:   45:void test_create_destroy()
+        -:   46:{
+        2:   47:    ioopm_hash_table_t *ht = ioopm_hash_table_create(NULL, key_eq, value_eq);
+        2:   47-block  0
+call    0 returned 2
+        2:   48:    CU_ASSERT_PTR_NOT_NULL(ht);
+call    0 returned 2
+        2:   49:    ioopm_hash_table_destroy(ht);
+call    0 returned 2
+        2:   50:}
+        -:   51:
+function test_insert_once called 2 returned 100% blocks executed 100%
+        2:   52:void test_insert_once()
+        -:   53:{
+        2:   54:    ioopm_hash_table_t *ht = ioopm_hash_table_create(NULL, key_eq, value_eq);
+        2:   54-block  0
+call    0 returned 2
+        -:   55:
+        2:   56:    CU_ASSERT_FALSE(ioopm_hash_table_lookup(ht, (elem_t){.i = 1}).success);
+call    0 returned 2
+call    1 returned 2
+        2:   57:    ioopm_hash_table_insert(ht, (elem_t){.i = 1}, (elem_t){.p = "AAA"});
+call    0 returned 2
+        2:   58:    ioopm_hash_table_insert(ht, (elem_t){.i = 1}, (elem_t){.p = "BBB"});
+call    0 returned 2
+        2:   59:    CU_ASSERT_TRUE(ioopm_hash_table_lookup(ht, (elem_t){.i = 1}).success);
+call    0 returned 2
+call    1 returned 2
+        2:   60:    ioopm_hash_table_destroy(ht);
+call    0 returned 2
+        2:   61:}
+        -:   62:
+function test_lookup_empty called 2 returned 100% blocks executed 100%
+        2:   63:void test_lookup_empty()
+        -:   64:{
+        2:   65:    ioopm_hash_table_t *ht = ioopm_hash_table_create(NULL, key_eq, value_eq);
+        2:   65-block  0
+call    0 returned 2
+        -:   66:    elem_t test;
+        2:   67:    test.i = 1;
+        2:   68:    CU_ASSERT_PTR_NULL(ioopm_hash_table_lookup(ht, test).value.p);
+call    0 returned 2
+call    1 returned 2
+        2:   69:    ioopm_hash_table_destroy(ht);
+call    0 returned 2
+        2:   70:}
+        -:   71:
+function test_remove called 2 returned 100% blocks executed 100%
+        2:   72:void test_remove()
+        -:   73:{
+        2:   74:    ioopm_hash_table_t *ht = ioopm_hash_table_create(NULL, key_eq, value_eq);
+        2:   74-block  0
+call    0 returned 2
+        -:   75:
+        -:   76:    // Case 1:
+        2:   77:    CU_ASSERT_FALSE(ioopm_hash_table_remove(ht, (elem_t){.i = 1}).success);
+call    0 returned 2
+call    1 returned 2
+        -:   78:
+        -:   79:    // Case 2:
+        2:   80:    ioopm_hash_table_insert(ht, (elem_t){.i = 1}, (elem_t){.p = "AAA"});
+call    0 returned 2
+        2:   81:    ioopm_hash_table_insert(ht, (elem_t){.i = 18}, (elem_t){.p = "BBB"});
+call    0 returned 2
+        2:   82:    ioopm_hash_table_insert(ht, (elem_t){.i = 35}, (elem_t){.p = "CCC"});
+call    0 returned 2
+        -:   83:
+        2:   84:    ioopm_hash_table_remove(ht, (elem_t){.i = 18});
+call    0 returned 2
+        -:   85:
+        2:   86:    CU_ASSERT_TRUE(ioopm_hash_table_lookup(ht, (elem_t){.i = 1}).success);
+call    0 returned 2
+call    1 returned 2
+        2:   87:    CU_ASSERT_FALSE(ioopm_hash_table_lookup(ht, (elem_t){.i = 18}).success);
+call    0 returned 2
+call    1 returned 2
+        2:   88:    CU_ASSERT_TRUE(ioopm_hash_table_lookup(ht, (elem_t){.i = 35}).success);
+call    0 returned 2
+call    1 returned 2
+        -:   89:
+        -:   90:    // Case 3:
+        2:   91:    ioopm_hash_table_remove(ht, (elem_t){.i = 35});
+call    0 returned 2
+        2:   92:    CU_ASSERT_FALSE(ioopm_hash_table_lookup(ht, (elem_t){.i = 35}).success);
+call    0 returned 2
+call    1 returned 2
+        2:   93:    CU_ASSERT_TRUE(ioopm_hash_table_lookup(ht, (elem_t){.i = 1}).success);
+call    0 returned 2
+call    1 returned 2
+        -:   94:
+        2:   95:    ioopm_hash_table_destroy(ht);
+call    0 returned 2
+        2:   96:}
+        -:   97:
+function test_size_empty_clear called 2 returned 100% blocks executed 100%
+        2:   98:void test_size_empty_clear()
+        -:   99:{
+        2:  100:    ioopm_hash_table_t *ht = ioopm_hash_table_create(NULL, key_eq, value_eq);
+        2:  100-block  0
+call    0 returned 2
+        -:  101:
+        2:  102:    ioopm_hash_table_insert(ht, (elem_t){.i = 1}, (elem_t){.p = "AAA"});
+call    0 returned 2
+        2:  103:    ioopm_hash_table_insert(ht, (elem_t){.i = 18}, (elem_t){.p = "BBB"});
+call    0 returned 2
+        2:  104:    ioopm_hash_table_insert(ht, (elem_t){.i = 35}, (elem_t){.p = "CCC"});
+call    0 returned 2
+        -:  105:
+        2:  106:    CU_ASSERT_EQUAL(3, ioopm_hash_table_size(ht));
+call    0 returned 2
+call    1 returned 2
+        2:  107:    CU_ASSERT_FALSE(ioopm_hash_table_is_empty(ht));
+call    0 returned 2
+call    1 returned 2
+        2:  108:    ioopm_hash_table_clear(ht);
+call    0 returned 2
+        2:  109:    CU_ASSERT_EQUAL(0, ioopm_hash_table_size(ht));
+call    0 returned 2
+call    1 returned 2
+        2:  110:    CU_ASSERT_TRUE(ioopm_hash_table_is_empty(ht));
+call    0 returned 2
+call    1 returned 2
+        -:  111:
+        2:  112:    ioopm_hash_table_destroy(ht);
+call    0 returned 2
+        2:  113:}
+        -:  114:
+function test_keys called 2 returned 100% blocks executed 100%
+        2:  115:void test_keys()
+        -:  116:{
+        2:  117:    ioopm_hash_table_t *ht = ioopm_hash_table_create(NULL, key_eq, value_eq);
+        2:  117-block  0
+call    0 returned 2
+        -:  118:
+        2:  119:    int keys[5] = {3, 10, 42, 0, 99};
+        2:  120:    bool found[5] = {false};
+        -:  121:
+        2:  122:    ioopm_hash_table_insert(ht, (elem_t){.i = 3}, (elem_t){.p = ""});
+call    0 returned 2
+        2:  123:    ioopm_hash_table_insert(ht, (elem_t){.i = 10}, (elem_t){.p = ""});
+call    0 returned 2
+        2:  124:    ioopm_hash_table_insert(ht, (elem_t){.i = 42}, (elem_t){.p = ""});
+call    0 returned 2
+        2:  125:    ioopm_hash_table_insert(ht, (elem_t){.i = 0}, (elem_t){.p = ""});
+call    0 returned 2
+        2:  126:    ioopm_hash_table_insert(ht, (elem_t){.i = 99}, (elem_t){.p = ""});
+call    0 returned 2
+        -:  127:
+        2:  128:    ioopm_list_t *found_keys = ioopm_hash_table_keys(ht);
+call    0 returned 2
+        -:  129:
+       12:  130:    for (int i = 0; i < 5; i++)
+unconditional  0 taken 2
+       10:  130-block  0
+unconditional  1 taken 10
+       12:  130-block  1
+branch  2 taken 10
+branch  3 taken 2 (fallthrough)
+        -:  131:    {
+       60:  132:        for (int j = 0; j < 5; j++)
+       10:  132-block  0
+unconditional  0 taken 10
+       50:  132-block  1
+unconditional  1 taken 50
+       60:  132-block  2
+branch  2 taken 50
+branch  3 taken 10 (fallthrough)
+        -:  133:        {
+       50:  134:            if (ioopm_linked_list_get(found_keys, i).i == keys[j])
+       50:  134-block  0
+call    0 returned 50
+branch  1 taken 10 (fallthrough)
+branch  2 taken 40
+        -:  135:            {
+       10:  136:                found[j] = true;
+       10:  137:                continue;
+       10:  137-block  0
+unconditional  0 taken 10
+        -:  138:            }
+        -:  139:            else if (j == 4)
+        -:  140:            {
+        -:  141:                // CU_FAIL("Found a key that was never inserted");
+        -:  142:            }
+        -:  143:        }
+        -:  144:    }
+        -:  145:
+        2:  146:    ioopm_linked_list_destroy(found_keys);
+        2:  146-block  0
+call    0 returned 2
+        -:  147:
+       12:  148:    for (int i = 0; i < 5; i++)
+unconditional  0 taken 2
+unconditional  1 taken 10
+       12:  148-block  0
+branch  2 taken 10
+branch  3 taken 2 (fallthrough)
+        -:  149:    {
+       10:  150:        CU_ASSERT_TRUE(found[i]);
+       10:  150-block  0
+call    0 returned 10
+        -:  151:    }
+        -:  152:
+        2:  153:    ioopm_hash_table_destroy(ht);
+        2:  153-block  0
+call    0 returned 2
+        2:  154:}
+        -:  155:
+function test_values called 2 returned 100% blocks executed 100%
+        2:  156:void test_values()
+        -:  157:{
+        2:  158:    ioopm_hash_table_t *ht = ioopm_hash_table_create(NULL, key_eq, value_eq);
+        2:  158-block  0
+call    0 returned 2
+        -:  159:
+        2:  160:    int keys[5] = {3, 10, 42, 0, 99};
+        2:  161:    char *values[5] = {"three", "ten", "fortytwo", "zero", "ninetynine"};
+        -:  162:
+        2:  163:    ioopm_hash_table_insert(ht, (elem_t){.i = 3}, (elem_t){.p = "three"});
+call    0 returned 2
+        2:  164:    ioopm_hash_table_insert(ht, (elem_t){.i = 10}, (elem_t){.p = "ten"});
+call    0 returned 2
+        2:  165:    ioopm_hash_table_insert(ht, (elem_t){.i = 42}, (elem_t){.p = "fortytwo"});
+call    0 returned 2
+        2:  166:    ioopm_hash_table_insert(ht, (elem_t){.i = 0}, (elem_t){.p = "zero"});
+call    0 returned 2
+        2:  167:    ioopm_hash_table_insert(ht, (elem_t){.i = 99}, (elem_t){.p = "ninetynine"});
+call    0 returned 2
+        -:  168:
+        2:  169:    ioopm_list_t *found_keys = ioopm_hash_table_keys(ht);
+call    0 returned 2
+        2:  170:    ioopm_list_t *found_values = ioopm_hash_table_values(ht);
+call    0 returned 2
+        -:  171:
+       12:  172:    for (int i = 0; i < 5; i++)
+unconditional  0 taken 2
+       10:  172-block  0
+unconditional  1 taken 10
+       12:  172-block  1
+branch  2 taken 10
+branch  3 taken 2 (fallthrough)
+        -:  173:    {
+       60:  174:        for (int j = 0; j < 5; j++)
+       10:  174-block  0
+unconditional  0 taken 10
+       50:  174-block  1
+unconditional  1 taken 50
+       60:  174-block  2
+branch  2 taken 50
+branch  3 taken 10 (fallthrough)
+        -:  175:        {
+       50:  176:            if (ioopm_linked_list_get(found_keys, i).i == keys[j])
+       50:  176-block  0
+call    0 returned 50
+branch  1 taken 10 (fallthrough)
+branch  2 taken 40
+        -:  177:            {
+       10:  178:                CU_ASSERT_EQUAL(values[j], ioopm_linked_list_get(found_values, i).p);
+       10:  178-block  0
+call    0 returned 10
+call    1 returned 10
+unconditional  2 taken 10
+        -:  179:            }
+        -:  180:        }
+        -:  181:    }
+        -:  182:
+        2:  183:    ioopm_linked_list_destroy(found_keys);
+        2:  183-block  0
+call    0 returned 2
+        2:  184:    ioopm_linked_list_destroy(found_values);
+call    0 returned 2
+        -:  185:
+        2:  186:    ioopm_hash_table_destroy(ht);
+call    0 returned 2
+        2:  187:}
+        -:  188:
+function test_any_key called 2 returned 100% blocks executed 100%
+        2:  189:void test_any_key()
+        -:  190:{
+        2:  191:    ioopm_hash_table_t *ht = ioopm_hash_table_create(NULL, key_eq, value_eq);
+        2:  191-block  0
+call    0 returned 2
+        -:  192:
+        2:  193:    ioopm_hash_table_insert(ht, (elem_t){.i = 1}, (elem_t){.p = "AAA"});
+call    0 returned 2
+        2:  194:    ioopm_hash_table_insert(ht, (elem_t){.i = 18}, (elem_t){.p = "BBB"});
+call    0 returned 2
+        2:  195:    ioopm_hash_table_insert(ht, (elem_t){.i = 35}, (elem_t){.p = "CCC"});
+call    0 returned 2
+        -:  196:
+        2:  197:    CU_ASSERT_TRUE(ioopm_hash_table_has_key(ht, (elem_t){.i = 1}));
+call    0 returned 2
+call    1 returned 2
+        2:  198:    CU_ASSERT_TRUE(ioopm_hash_table_has_key(ht, (elem_t){.i = 18}));
+call    0 returned 2
+call    1 returned 2
+        2:  199:    CU_ASSERT_TRUE(ioopm_hash_table_has_key(ht, (elem_t){.i = 35}));
+call    0 returned 2
+call    1 returned 2
+        2:  200:    CU_ASSERT_FALSE(ioopm_hash_table_has_key(ht, (elem_t){.i = 10}));
+call    0 returned 2
+call    1 returned 2
+        -:  201:
+        2:  202:    ioopm_hash_table_destroy(ht);
+call    0 returned 2
+        2:  203:}
+        -:  204:
+function test_any_value called 2 returned 100% blocks executed 100%
+        2:  205:void test_any_value()
+        -:  206:{
+        2:  207:    ioopm_hash_table_t *ht = ioopm_hash_table_create(NULL, key_eq, value_eq);
+        2:  207-block  0
+call    0 returned 2
+        -:  208:
+        2:  209:    ioopm_hash_table_insert(ht, (elem_t){.i = 1}, (elem_t){.p = "AAA"});
+call    0 returned 2
+        -:  210:
+        2:  211:    CU_ASSERT_TRUE(ioopm_hash_table_has_value(ht, (elem_t){.p = "AAA"}));
+call    0 returned 2
+call    1 returned 2
+        2:  212:    CU_ASSERT_FALSE(ioopm_hash_table_has_value(ht, (elem_t){.p = "BBB"}));
+call    0 returned 2
+call    1 returned 2
+        -:  213:
+        2:  214:    ioopm_hash_table_destroy(ht);
+call    0 returned 2
+        2:  215:}
+        -:  216:
+function test_any_function called 2 returned 100% blocks executed 100%
+        2:  217:void test_any_function()
+        -:  218:{
+        2:  219:    ioopm_hash_table_t *ht = ioopm_hash_table_create(NULL, key_eq, value_eq);
+        2:  219-block  0
+call    0 returned 2
+        -:  220:
+        2:  221:    ioopm_hash_table_insert(ht, (elem_t){.i = 1}, (elem_t){.p = "AAA"});
+call    0 returned 2
+        -:  222:
+        2:  223:    CU_ASSERT_TRUE(ioopm_hash_table_any(ht, value_equiv_any, (elem_t){.p = "AAA"}));
+call    0 returned 2
+call    1 returned 2
+        2:  224:    CU_ASSERT_FALSE(ioopm_hash_table_any(ht, value_equiv_any, (elem_t){.p = "BBB"}));
+call    0 returned 2
+call    1 returned 2
+        -:  225:
+        2:  226:    ioopm_hash_table_destroy(ht);
+call    0 returned 2
+        2:  227:}
+        -:  228:
+function not_empty called 14 returned 100% blocks executed 100%
+       14:  229:static bool not_empty(elem_t key_ignored, elem_t value, elem_t x_ignored)
+        -:  230:{
+        -:  231:
+       14:  232:    return strlen(value.p) > 0;
+       14:  232-block  0
+unconditional  0 taken 14
+        -:  233:}
+        -:  234:
+function test_all called 2 returned 100% blocks executed 100%
+        2:  235:void test_all()
+        -:  236:{
+        2:  237:    ioopm_hash_table_t *ht = ioopm_hash_table_create(NULL, key_eq, value_eq);
+        2:  237-block  0
+call    0 returned 2
+        -:  238:
+        2:  239:    ioopm_hash_table_insert(ht, (elem_t){.i = 1}, (elem_t){.p = "AAA"});
+call    0 returned 2
+        2:  240:    ioopm_hash_table_insert(ht, (elem_t){.i = 18}, (elem_t){.p = "BBB"});
+call    0 returned 2
+        2:  241:    ioopm_hash_table_insert(ht, (elem_t){.i = 35}, (elem_t){.p = "CCC"});
+call    0 returned 2
+        -:  242:
+        2:  243:    CU_ASSERT_TRUE(ioopm_hash_table_all(ht, not_empty, (elem_t){.p = NULL}));
+call    0 returned 2
+call    1 returned 2
+        2:  244:    ioopm_hash_table_insert(ht, (elem_t){.i = 10}, (elem_t){.p = ""});
+call    0 returned 2
+        2:  245:    CU_ASSERT_FALSE(ioopm_hash_table_all(ht, not_empty, (elem_t){.p = NULL}));
+call    0 returned 2
+call    1 returned 2
+        -:  246:
+        2:  247:    ioopm_hash_table_destroy(ht);
+call    0 returned 2
+        2:  248:}
+        -:  249:
+function make_zero_all called 6 returned 100% blocks executed 100%
+        6:  250:static void make_zero_all(elem_t key_ignored, elem_t *value, elem_t x_ignored)
+        -:  251:{
+        6:  252:    value->i = 0;
+        6:  253:}
+        -:  254:
+function test_apply called 2 returned 100% blocks executed 100%
+        2:  255:void test_apply()
+        -:  256:{
+        2:  257:    ioopm_hash_table_t *ht = ioopm_hash_table_create(NULL, key_eq, value_eq);
+        2:  257-block  0
+call    0 returned 2
+        -:  258:
+        2:  259:    ioopm_hash_table_insert(ht, (elem_t){.i = 1}, (elem_t){.i = 10});
+call    0 returned 2
+        2:  260:    ioopm_hash_table_insert(ht, (elem_t){.i = 18}, (elem_t){.i = 105});
+call    0 returned 2
+        2:  261:    ioopm_hash_table_insert(ht, (elem_t){.i = 35}, (elem_t){.i = 0});
+call    0 returned 2
+        -:  262:
+        2:  263:    ioopm_hash_table_apply_to_all(ht, make_zero_all, (elem_t){.p = NULL});
+call    0 returned 2
+        2:  264:    CU_ASSERT_TRUE(ioopm_hash_table_lookup(ht, (elem_t){.i = 1}).success);
+call    0 returned 2
+call    1 returned 2
+        2:  265:    CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t){.i = 1}).value.i, 0);
+call    0 returned 2
+call    1 returned 2
+        -:  266:
+        2:  267:    CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t){.i = 18}).value.i, 0);
+call    0 returned 2
+call    1 returned 2
+        -:  268:
+        2:  269:    CU_ASSERT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t){.i = 35}).value.i, 0);
+call    0 returned 2
+call    1 returned 2
+        -:  270:
+        2:  271:    ioopm_hash_table_insert(ht, (elem_t){.i = 10}, (elem_t){.i = 5});
+call    0 returned 2
+        2:  272:    CU_ASSERT_NOT_EQUAL(ioopm_hash_table_lookup(ht, (elem_t){.i = 10}).value.i, 0);
+call    0 returned 2
+call    1 returned 2
+        -:  273:
+        2:  274:    ioopm_hash_table_destroy(ht);
+call    0 returned 2
+        2:  275:}
+        -:  276:
+function equal_int called 14 returned 100% blocks executed 100%
+       14:  277:static bool equal_int(elem_t value, elem_t extra)
+        -:  278:{
+       14:  279:    return value.i == extra.i;
+       14:  279-block  0
+unconditional  0 taken 14
+        -:  280:}
+        -:  281:
+function test_linked_list called 2 returned 100% blocks executed 100%
+        2:  282:void test_linked_list()
+        -:  283:{
+        2:  284:    ioopm_list_t *ll = ioopm_linked_list_create(key_eq);
+        2:  284-block  0
+call    0 returned 2
+        -:  285:
+        2:  286:    CU_ASSERT_TRUE(ioopm_linked_list_is_empty(ll));
+call    0 returned 2
+call    1 returned 2
+        2:  287:    CU_ASSERT_FALSE(ioopm_linked_list_contains(ll, (elem_t){.i = 10}));
+call    0 returned 2
+call    1 returned 2
+        -:  288:
+        -:  289:    // Test prepend and append
+        2:  290:    ioopm_linked_list_append(ll, (elem_t){.i = 1});
+call    0 returned 2
+        2:  291:    ioopm_linked_list_append(ll, (elem_t){.i = 10});
+call    0 returned 2
+        -:  292:    // (1, 10)
+        2:  293:    CU_ASSERT_TRUE(ioopm_linked_list_contains(ll, (elem_t){.i = 1}));
+call    0 returned 2
+call    1 returned 2
+        2:  294:    CU_ASSERT_TRUE(ioopm_linked_list_contains(ll, (elem_t){.i = 10}));
+call    0 returned 2
+call    1 returned 2
+        2:  295:    CU_ASSERT_EQUAL(ioopm_linked_list_size(ll), 2);
+call    0 returned 2
+call    1 returned 2
+        2:  296:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 0).i, 1);
+call    0 returned 2
+call    1 returned 2
+        2:  297:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 1).i, 10);
+call    0 returned 2
+call    1 returned 2
+        -:  298:
+        -:  299:    // Test insert
+        2:  300:    ioopm_linked_list_insert(ll, 1, (elem_t){.i = 5});
+call    0 returned 2
+        2:  301:    ioopm_linked_list_insert(ll, 2, (elem_t){.i = 15});
+call    0 returned 2
+        2:  302:    ioopm_linked_list_insert(ll, 0, (elem_t){.i = 0});
+call    0 returned 2
+        -:  303:    // (0, 1, 5, 15, 10)
+        2:  304:    CU_ASSERT_EQUAL(ioopm_linked_list_size(ll), 5);
+call    0 returned 2
+call    1 returned 2
+        2:  305:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 2).i, 5);
+call    0 returned 2
+call    1 returned 2
+        -:  306:
+        2:  307:    CU_ASSERT_TRUE(ioopm_linked_list_contains(ll, (elem_t){.i = 5}));
+call    0 returned 2
+call    1 returned 2
+        2:  308:    CU_ASSERT_TRUE(ioopm_linked_list_contains(ll, (elem_t){.i = 15}));
+call    0 returned 2
+call    1 returned 2
+        2:  309:    CU_ASSERT_TRUE(ioopm_linked_list_contains(ll, (elem_t){.i = 0}));
+call    0 returned 2
+call    1 returned 2
+        2:  310:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 1).i, 1);
+call    0 returned 2
+call    1 returned 2
+        2:  311:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 0).i, 0);
+call    0 returned 2
+call    1 returned 2
+        2:  312:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 4).i, 10);
+call    0 returned 2
+call    1 returned 2
+        -:  313:
+        -:  314:    // Test remove
+        2:  315:    ioopm_linked_list_remove(ll, 1);
+call    0 returned 2
+        -:  316:    // (0, 5, 15, 10)
+        2:  317:    CU_ASSERT_FALSE(ioopm_linked_list_contains(ll, (elem_t){.i = 1}));
+call    0 returned 2
+call    1 returned 2
+        2:  318:    CU_ASSERT_NOT_EQUAL(ioopm_linked_list_get(ll, 1).i, 1);
+call    0 returned 2
+call    1 returned 2
+        2:  319:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 0).i, 0);
+call    0 returned 2
+call    1 returned 2
+        2:  320:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 1).i, 5);
+call    0 returned 2
+call    1 returned 2
+        -:  321:
+        2:  322:    ioopm_linked_list_remove(ll, 1);
+call    0 returned 2
+        -:  323:    // (0, 15, 10)
+        -:  324:    // CU_ASSERT_FALSE(ioopm_linked_list_contains(ll, 0));
+        2:  325:    CU_ASSERT_NOT_EQUAL(ioopm_linked_list_get(ll, 1).i, 0);
+call    0 returned 2
+call    1 returned 2
+        2:  326:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 1).i, 15);
+call    0 returned 2
+call    1 returned 2
+        -:  327:
+        2:  328:    ioopm_linked_list_remove(ll, 2);
+call    0 returned 2
+        -:  329:    // (5, 15)
+        2:  330:    CU_ASSERT_FALSE(ioopm_linked_list_contains(ll, (elem_t){.i = 10}));
+call    0 returned 2
+call    1 returned 2
+        -:  331:
+        2:  332:    ioopm_linked_list_remove(ll, 1); // (5)
+call    0 returned 2
+        2:  333:    ioopm_linked_list_remove(ll, 0);
+call    0 returned 2
+        -:  334:
+        2:  335:    CU_ASSERT_TRUE(ioopm_linked_list_is_empty(ll));
+call    0 returned 2
+call    1 returned 2
+        -:  336:
+        2:  337:    ioopm_linked_list_destroy(ll);
+call    0 returned 2
+        2:  338:}
+        -:  339:
+function test_ll_insert called 2 returned 100% blocks executed 100%
+        2:  340:void test_ll_insert()
+        -:  341:{
+        2:  342:    ioopm_list_t *ll = ioopm_linked_list_create(key_eq);
+        2:  342-block  0
+call    0 returned 2
+        -:  343:
+        2:  344:    ioopm_linked_list_append(ll, (elem_t){.i = 1});
+call    0 returned 2
+        2:  345:    ioopm_linked_list_append(ll, (elem_t){.i = 10});
+call    0 returned 2
+        -:  346:
+        2:  347:    ioopm_linked_list_insert(ll, 1, (elem_t){.i = 5});
+call    0 returned 2
+        2:  348:    ioopm_linked_list_insert(ll, 2, (elem_t){.i = 15});
+call    0 returned 2
+        2:  349:    ioopm_linked_list_insert(ll, 0, (elem_t){.i = 0});
+call    0 returned 2
+        -:  350:
+        -:  351:    // (0, 1, 5, 15, 10)
+        2:  352:    CU_ASSERT_EQUAL(ioopm_linked_list_size(ll), 5);
+call    0 returned 2
+call    1 returned 2
+        2:  353:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 2).i, 5);
+call    0 returned 2
+call    1 returned 2
+        -:  354:
+        2:  355:    CU_ASSERT_TRUE(ioopm_linked_list_contains(ll, (elem_t){.i = 5}));
+call    0 returned 2
+call    1 returned 2
+        2:  356:    CU_ASSERT_TRUE(ioopm_linked_list_contains(ll, (elem_t){.i = 15}));
+call    0 returned 2
+call    1 returned 2
+        2:  357:    CU_ASSERT_TRUE(ioopm_linked_list_contains(ll, (elem_t){.i = 0}));
+call    0 returned 2
+call    1 returned 2
+        2:  358:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 1).i, 1);
+call    0 returned 2
+call    1 returned 2
+        2:  359:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 0).i, 0);
+call    0 returned 2
+call    1 returned 2
+        2:  360:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 4).i, 10);
+call    0 returned 2
+call    1 returned 2
+        -:  361:
+        2:  362:    ioopm_linked_list_insert(ll, 5, (elem_t){.i = 2});
+call    0 returned 2
+        -:  363:
+        2:  364:    ioopm_linked_list_remove(ll, 0);
+call    0 returned 2
+        -:  365:
+        2:  366:    ioopm_linked_list_destroy(ll);
+call    0 returned 2
+        2:  367:}
+        -:  368:
+        -:  369:// Tests ioopm_linked_list_all
+function test_linked_list_all called 2 returned 100% blocks executed 100%
+        2:  370:void test_linked_list_all()
+        -:  371:{
+        2:  372:    ioopm_list_t *ll = ioopm_linked_list_create(key_eq);
+        2:  372-block  0
+call    0 returned 2
+        -:  373:
+        2:  374:    ioopm_linked_list_prepend(ll, (elem_t){.i = 2});
+call    0 returned 2
+        2:  375:    ioopm_linked_list_prepend(ll, (elem_t){.i = 2});
+call    0 returned 2
+        -:  376:
+        2:  377:    CU_ASSERT_TRUE(ioopm_linked_list_all(ll, equal_int, (elem_t){.i = 2}));
+call    0 returned 2
+call    1 returned 2
+        2:  378:    CU_ASSERT_FALSE(ioopm_linked_list_all(ll, equal_int, (elem_t){.i = 5}));
+call    0 returned 2
+call    1 returned 2
+        -:  379:
+        2:  380:    ioopm_linked_list_destroy(ll);
+call    0 returned 2
+        2:  381:}
+        -:  382:
+function test_linked_list_any called 2 returned 100% blocks executed 100%
+        2:  383:void test_linked_list_any()
+        -:  384:{
+        2:  385:    ioopm_list_t *ll = ioopm_linked_list_create(key_eq);
+        2:  385-block  0
+call    0 returned 2
+        -:  386:
+        2:  387:    ioopm_linked_list_prepend(ll, (elem_t){.i = 2});
+call    0 returned 2
+        2:  388:    ioopm_linked_list_prepend(ll, (elem_t){.i = 4});
+call    0 returned 2
+        -:  389:
+        2:  390:    CU_ASSERT_FALSE(ioopm_linked_list_any(ll, equal_int, (elem_t){.p = NULL}));
+call    0 returned 2
+call    1 returned 2
+        -:  391:
+        2:  392:    CU_ASSERT_TRUE(ioopm_linked_list_any(ll, equal_int, (elem_t){.i = 2}));
+call    0 returned 2
+call    1 returned 2
+        -:  393:
+        2:  394:    ioopm_linked_list_destroy(ll);
+call    0 returned 2
+        2:  395:}
+        -:  396:
+function make_zero called 4 returned 100% blocks executed 100%
+        4:  397:static void make_zero(elem_t *value, elem_t extra)
+        -:  398:{
+        4:  399:    value->i = 0;
+        4:  400:}
+        -:  401:
+function test_linked_list_apply_to_all called 2 returned 100% blocks executed 100%
+        2:  402:void test_linked_list_apply_to_all()
+        -:  403:{
+        2:  404:    ioopm_list_t *ll = ioopm_linked_list_create(key_eq);
+        2:  404-block  0
+call    0 returned 2
+        -:  405:
+        2:  406:    ioopm_linked_list_prepend(ll, (elem_t){.i = 2});
+call    0 returned 2
+        2:  407:    ioopm_linked_list_prepend(ll, (elem_t){.i = 4});
+call    0 returned 2
+        -:  408:
+        2:  409:    ioopm_linked_list_apply_to_all(ll, make_zero, (elem_t){.p = NULL});
+call    0 returned 2
+        -:  410:
+        2:  411:    CU_ASSERT_EQUAL(ioopm_linked_list_get(ll, 1).i, 0);
+call    0 returned 2
+call    1 returned 2
+        -:  412:
+        2:  413:    ioopm_linked_list_destroy(ll);
+call    0 returned 2
+        2:  414:}
+        -:  415:
+function test_iter_has_next called 2 returned 100% blocks executed 100%
+        2:  416:void test_iter_has_next()
+        -:  417:{
+        2:  418:    ioopm_list_t *ll = ioopm_linked_list_create(key_eq);
+        2:  418-block  0
+call    0 returned 2
+        2:  419:    ioopm_list_iterator_t *itr = ioopm_list_iterator(ll);
+call    0 returned 2
+        -:  420:
+        2:  421:    CU_ASSERT_FALSE(ioopm_iterator_has_next(itr));
+call    0 returned 2
+call    1 returned 2
+        2:  422:    elem_t k1 = {.i = 5};
+        2:  423:    ioopm_linked_list_append(ll, k1);
+call    0 returned 2
+        2:  424:    CU_ASSERT_TRUE(ioopm_iterator_has_next(itr));
+call    0 returned 2
+call    1 returned 2
+        -:  425:
+        2:  426:    ioopm_iterator_destroy(itr);
+call    0 returned 2
+        2:  427:    ioopm_linked_list_destroy(ll);
+call    0 returned 2
+        2:  428:}
+        -:  429:
+function test_iter_next called 2 returned 100% blocks executed 100%
+        2:  430:void test_iter_next()
+        -:  431:{
+        2:  432:    ioopm_list_t *ll = ioopm_linked_list_create(key_eq);
+        2:  432-block  0
+call    0 returned 2
+        2:  433:    ioopm_list_iterator_t *itr = ioopm_list_iterator(ll);
+call    0 returned 2
+        -:  434:
+        2:  435:    elem_t k1 = {.i = 5};
+        2:  436:    ioopm_linked_list_append(ll, k1);
+call    0 returned 2
+        -:  437:
+        2:  438:    CU_ASSERT_EQUAL(ioopm_iterator_next(itr).i, 5);
+call    0 returned 2
+call    1 returned 2
+        -:  439:
+        2:  440:    ioopm_iterator_destroy(itr);
+call    0 returned 2
+        2:  441:    ioopm_linked_list_destroy(ll);
+call    0 returned 2
+        2:  442:}
+        -:  443:
+function test_iter_current called 2 returned 100% blocks executed 100%
+        2:  444:void test_iter_current()
+        -:  445:{
+        2:  446:    ioopm_list_t *ll = ioopm_linked_list_create(key_eq);
+        2:  446-block  0
+call    0 returned 2
+        2:  447:    ioopm_list_iterator_t *itr = ioopm_list_iterator(ll);
+call    0 returned 2
+        -:  448:
+        2:  449:    elem_t k1 = {.i = 5};
+        2:  450:    ioopm_linked_list_append(ll, k1);
+call    0 returned 2
+        2:  451:    ioopm_iterator_next(itr);
+call    0 returned 2
+        2:  452:    CU_ASSERT_EQUAL(ioopm_iterator_current(itr).i, 5);
+call    0 returned 2
+call    1 returned 2
+        2:  453:    elem_t k2 = {.i = 6};
+        2:  454:    ioopm_linked_list_append(ll, k2);
+call    0 returned 2
+        2:  455:    ioopm_iterator_next(itr);
+call    0 returned 2
+        2:  456:    CU_ASSERT_EQUAL(ioopm_iterator_current(itr).i, 6);
+call    0 returned 2
+call    1 returned 2
+        -:  457:
+        2:  458:    ioopm_iterator_destroy(itr);
+call    0 returned 2
+        2:  459:    ioopm_linked_list_destroy(ll);
+call    0 returned 2
+        2:  460:}
+        -:  461:
+function test_iter_reset called 2 returned 100% blocks executed 100%
+        2:  462:void test_iter_reset()
+        -:  463:{
+        2:  464:    ioopm_list_t *ll = ioopm_linked_list_create(key_eq);
+        2:  464-block  0
+call    0 returned 2
+        2:  465:    ioopm_list_iterator_t *itr = ioopm_list_iterator(ll);
+call    0 returned 2
+        -:  466:
+        2:  467:    elem_t k1 = {.i = 5};
+        2:  468:    ioopm_linked_list_append(ll, k1);
+call    0 returned 2
+        2:  469:    ioopm_iterator_next(itr);
+call    0 returned 2
+        2:  470:    CU_ASSERT_EQUAL(ioopm_iterator_current(itr).i, 5);
+call    0 returned 2
+call    1 returned 2
+        2:  471:    elem_t k2 = {.i = 6};
+        2:  472:    ioopm_linked_list_append(ll, k2);
+call    0 returned 2
+        2:  473:    ioopm_iterator_next(itr);
+call    0 returned 2
+        2:  474:    CU_ASSERT_EQUAL(ioopm_iterator_current(itr).i, 6);
+call    0 returned 2
+call    1 returned 2
+        2:  475:    ioopm_iterator_reset(itr);
+call    0 returned 2
+        2:  476:    CU_ASSERT_EQUAL(ioopm_iterator_next(itr).i, 5);
+call    0 returned 2
+call    1 returned 2
+        -:  477:
+        2:  478:    ioopm_iterator_destroy(itr);
+call    0 returned 2
+        2:  479:    ioopm_linked_list_destroy(ll);
+call    0 returned 2
+        2:  480:}
+        -:  481:
+function main called 2 returned 100% blocks executed 87%
+        2:  482:int main()
+        -:  483:{
+        -:  484:    // First we try to set up CUnit, and exit if we fail
+        2:  485:    if (CU_initialize_registry() != CUE_SUCCESS)
+        2:  485-block  0
+call    0 returned 2
+branch  1 taken 0 (fallthrough)
+branch  2 taken 2
+    #####:  486:        return CU_get_error();
+    %%%%%:  486-block  0
+call    0 never executed
+unconditional  1 never executed
+        -:  487:
+        -:  488:    // We then create an empty test suite and specify the name and
+        -:  489:    // the init and cleanup functions
+        2:  490:    CU_pSuite my_test_suite = CU_add_suite("My awesome test suite", init_suite, clean_suite);
+        2:  490-block  0
+call    0 returned 2
+        2:  491:    if (my_test_suite == NULL)
+branch  0 taken 0 (fallthrough)
+branch  1 taken 2
+        -:  492:    {
+        -:  493:        // If the test suite could not be added, tear down CUnit and exit
+    #####:  494:        CU_cleanup_registry();
+    %%%%%:  494-block  0
+call    0 never executed
+    #####:  495:        return CU_get_error();
+call    0 never executed
+unconditional  1 never executed
+        -:  496:    }
+        -:  497:
+        -:  498:    // This is where we add the test functions to our test suite.
+        -:  499:    // For each call to CU_add_test we specify the test suite, the
+        -:  500:    // name or description of the test, and the function that runs
+        -:  501:    // the test in question. If you want to add another test, just
+        -:  502:    // copy a line below and change the information
+        -:  503:
+        2:  504:    if (
+branch  0 taken 2 (fallthrough)
+branch  1 taken 0
+        4:  505:        (CU_add_test(my_test_suite, "Test the create and destroy", test_create_destroy) == NULL) ||
+        2:  505-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  506:        (CU_add_test(my_test_suite, "Test Lookup empty", test_lookup_empty) == NULL) ||
+        2:  506-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  507:        (CU_add_test(my_test_suite, "Test Insert once", test_insert_once) == NULL) ||
+        2:  507-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  508:        (CU_add_test(my_test_suite, "Test remove", test_remove) == NULL) ||
+        2:  508-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  509:        (CU_add_test(my_test_suite, "Test size empty clear", test_size_empty_clear) == NULL) ||
+        2:  509-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  510:        (CU_add_test(my_test_suite, "Test keys", test_keys) == NULL) ||
+        2:  510-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  511:        (CU_add_test(my_test_suite, "Test values", test_values) == NULL) ||
+        2:  511-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  512:        (CU_add_test(my_test_suite, "Test any key", test_any_key) == NULL) ||
+        2:  512-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  513:        (CU_add_test(my_test_suite, "Test any value", test_any_value) == NULL) ||
+        2:  513-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  514:        (CU_add_test(my_test_suite, "Test any function", test_any_function) == NULL) ||
+        2:  514-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  515:        (CU_add_test(my_test_suite, "Test all", test_all) == NULL) ||
+        2:  515-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  516:        (CU_add_test(my_test_suite, "Test apply", test_apply) == NULL) || // mem-leaks
+        2:  516-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  517:        (CU_add_test(my_test_suite, "Test Linked list", test_linked_list) == NULL) ||
+        2:  517-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  518:        (CU_add_test(my_test_suite, "Test Linked list insert", test_ll_insert) == NULL) ||
+        2:  518-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  519:        (CU_add_test(my_test_suite, "Test Linked all", test_linked_list_all) == NULL) ||
+        2:  519-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  520:        (CU_add_test(my_test_suite, "Test Linked any", test_linked_list_any) == NULL) ||
+        2:  520-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  521:        (CU_add_test(my_test_suite, "Test Linked apply to all", test_linked_list_apply_to_all) == NULL) ||
+        2:  521-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  522:        (CU_add_test(my_test_suite, "Test iterator has next", test_iter_has_next) == NULL) ||
+        2:  522-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  523:        (CU_add_test(my_test_suite, "Test iterator next", test_iter_next) == NULL) ||
+        2:  523-block  0
+call    0 returned 2
+branch  1 taken 2 (fallthrough)
+branch  2 taken 0
+        4:  524:        (CU_add_test(my_test_suite, "Test iterator current", test_iter_current) == NULL) ||
+        2:  524-block  0
+call    0 returned 2
+branch  1 taken 0 (fallthrough)
+branch  2 taken 2
+        2:  525:        (CU_add_test(my_test_suite, "Test iterator reset", test_iter_reset) == NULL) ||
+        2:  525-block  0
+call    0 returned 2
+        -:  526:        0)
+        -:  527:    {
+        -:  528:        // If adding any of the tests fails, we tear down CUnit and exit
+    #####:  529:        CU_cleanup_registry();
+    %%%%%:  529-block  0
+call    0 never executed
+    #####:  530:        return CU_get_error();
+call    0 never executed
+unconditional  1 never executed
+        -:  531:    }
+        -:  532:
+        -:  533:    // Set the running mode. Use CU_BRM_VERBOSE for maximum output.
+        -:  534:    // Use CU_BRM_NORMAL to only print errors and a summary
+        2:  535:    CU_basic_set_mode(CU_BRM_VERBOSE);
+        2:  535-block  0
+call    0 returned 2
+        -:  536:
+        -:  537:    // This is where the tests are actually run!
+        2:  538:    CU_basic_run_tests();
+call    0 returned 2
+        -:  539:
+        -:  540:    // Tear down CUnit before exiting
+        2:  541:    CU_cleanup_registry();
+call    0 returned 2
+        2:  542:    return CU_get_error();
+call    0 returned 2
+unconditional  1 taken 2
+        -:  543:}
