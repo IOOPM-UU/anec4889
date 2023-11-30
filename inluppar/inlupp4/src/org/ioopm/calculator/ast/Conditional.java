@@ -1,13 +1,13 @@
 package org.ioopm.calculator.ast;
 
-public class Conditional {
+public class Conditional extends SymbolicExpression {
     SymbolicExpression idLhs;
-    SymbolicExpression op;
+    String op;
     SymbolicExpression idRhs;
     SymbolicExpression scopeLhs;
     SymbolicExpression scopeRhs;
 
-    public Conditional(SymbolicExpression idLhs, SymbolicExpression op, SymbolicExpression idRhs,
+    public Conditional(SymbolicExpression idLhs, String op, SymbolicExpression idRhs,
             SymbolicExpression scopeLhs,
             SymbolicExpression scopeRhs) {
         this.idLhs = idLhs;
@@ -17,7 +17,13 @@ public class Conditional {
         this.scopeRhs = scopeRhs;
     }
 
+    @Override
     public SymbolicExpression accept(Visitor v) {
         return v.visit(this);
+    }
+
+    @Override
+    public int getPriority() {
+        return 0;
     }
 }

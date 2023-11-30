@@ -156,19 +156,34 @@ public class EvaluationVisitor implements Visitor {
         Environment temp = this.vars;
         this.vars = (Environment) temp.clone();
         SymbolicExpression arg = n.arg.accept(this);
-
         this.vars = temp;
         return arg;
     }
 
     @Override
     public SymbolicExpression visit(Conditional n) {
-        n.idLhs.accept(this);
-        n.idRhs.accept(this);
-        n.op.accept(this);
-        n.scopeLhs.accept(this);
-        n.scopeRhs.accept(this);
+        boolean ifElse = false;
+        SymbolicExpression lhs = n.idLhs.accept(this);
+        SymbolicExpression rhs = n.idRhs.accept(this);
+        SymbolicExpression sLhs = n.scopeLhs.accept(this);
+        SymbolicExpression sRhs = n.scopeRhs.accept(this);
 
-        return null;
+        if (n.op == "<") {
+            ifElse = lhs.getValue() < rhs.getValue();
+        } else if (n.op == ">") {
+            ifElse = lhs.getValue() > rhs.getValue();
+        } else if (n.op == "<=") {
+            ifElse = lhs.getValue() <= rhs.getValue();
+        } else if (n.op == ">=") {
+            ifElse = lhs.getValue() >= rhs.getValue();
+        } else {
+            ifElse = lhs.getValue() == rhs.getValue();
+        }
+
+        if (ifElse) {
+            return sLhs;
+        } else {
+            return sRhs;
+        }
     }
 }

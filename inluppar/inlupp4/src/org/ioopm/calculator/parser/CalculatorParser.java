@@ -30,6 +30,7 @@ public class CalculatorParser {
     private static String lte = "<=";
     private static String gte = ">=";
     private static String eq = "==";
+    private static String ELSE = "else";
 
     // unallowerdVars is used to check if variabel name that we
     // want to assign new meaning to is a valid name eg 3 = Quit
@@ -316,33 +317,34 @@ public class CalculatorParser {
     }
 
     private SymbolicExpression conditional() throws IOException {
-        boolean ifElse = false;
         this.st.nextToken();
-
-        SymbolicExpression lhs = primary();
+        SymbolicExpression lhs = expression();
         this.st.nextToken();
+        String op = "";
+        System.out.println("operator: " + st.toString());
         if (this.st.sval.equals(lt)) {
-            ifElse = lhs.getValue() < primary().getValue();
+            op = "<";
         } else if (this.st.sval.equals(gt)) {
-            ifElse = lhs.getValue() > primary().getValue();
+            op = ">";
         } else if (this.st.sval.equals(lte)) {
-            ifElse = lhs.getValue() <= primary().getValue();
+            op = "<=";
         } else if (this.st.sval.equals(gte)) {
-            ifElse = lhs.getValue() >= primary().getValue();
+            op = ">=";
         } else if (this.st.sval.equals(eq)) {
-            ifElse = lhs.getValue() == primary().getValue();
+            op = "==";
         } else {
-            throw new SyntaxErrorException("Error: Not correctly formated");
+            throw new SyntaxErrorException("Error: Expected conditional operator");
         }
+
         this.st.nextToken();
-        if (ifElse) {
-            return primary();
-        } else {
+        SymbolicExpression rhs = expression();
+        this.st.nextToken();
+        SymbolicExpression scopeLhs = new Scope(assignment());
+        this.st.nextToken();
+        if (this.st.sval.equals(ELSE)) {
             this.st.nextToken();
-            this.st.nextToken();
-            return primary();
         }
-
+        SymbolicExpression scopeRhs = new Scope(assignment());
+        return new Conditional(lhs, op, rhs, scopeLhs, scopeRhs);
     }
-
 }
