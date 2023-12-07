@@ -1,5 +1,7 @@
 package org.ioopm.calculator.ast;
 
+import java.util.ArrayList;
+
 //import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EvaluationVisitor implements Visitor {
@@ -23,13 +25,14 @@ public class EvaluationVisitor implements Visitor {
     public SymbolicExpression visit(Assignment n) {
         SymbolicExpression lhs = n.lhs.accept(this);
         if (n.rhs.isUnary()) {
-            System.out.println("ndjn");
             throw new IllegalExpressionException("Error: cannot assign unary operator " + n.rhs.getName());
-        } else if (n.rhs.isVariable()) {
-            vars.put(new Variable(n.rhs.getVariable()), lhs);
-            return n.rhs.accept(this);
         }
-        return new Assignment(lhs, n.rhs);
+        this.vars.put(new Variable(n.rhs.getVariable()), lhs);
+        if (lhs.isConstant()) {
+            return new Constant(lhs.getValue());
+        } else {
+            return lhs;
+        }
     }
 
     @Override
@@ -133,10 +136,8 @@ public class EvaluationVisitor implements Visitor {
     @Override
     public SymbolicExpression visit(Variable n) {
         if (vars.containsKey(n)) {
-            if (vars.get(n).isConstant()) {
-                return new Constant(vars.get(n).getValue());
-            }
-            return vars.get(n);
+            SymbolicExpression exp = vars.get(n);
+            return exp.accept(this);
         }
         return new Variable(n.identifier);
     }
@@ -165,25 +166,71 @@ public class EvaluationVisitor implements Visitor {
         boolean ifElse = false;
         SymbolicExpression lhs = n.idLhs.accept(this);
         SymbolicExpression rhs = n.idRhs.accept(this);
-        SymbolicExpression sLhs = n.scopeLhs.accept(this);
-        SymbolicExpression sRhs = n.scopeRhs.accept(this);
-
-        if (n.op == "<") {
-            ifElse = lhs.getValue() < rhs.getValue();
-        } else if (n.op == ">") {
-            ifElse = lhs.getValue() > rhs.getValue();
-        } else if (n.op == "<=") {
-            ifElse = lhs.getValue() <= rhs.getValue();
-        } else if (n.op == ">=") {
-            ifElse = lhs.getValue() >= rhs.getValue();
+        SymbolicExpression taken = n.scopeLhs;
+        SymbolicExpression notTaken = n.scopeRhs;
+        if (lhs.isConstant() && rhs.isConstant()) {
+            if (n.op.equals("<")) {
+                ifElse = lhs.getValue() < rhs.getValue();
+            } else if (n.op.equals(">")) {
+                ifElse = lhs.getValue() > rhs.getValue();
+            } else if (n.op.equals("<=")) {
+                ifElse = lhs.getValue() <= rhs.getValue();
+            } else if (n.op.equals(">=")) {
+                ifElse = lhs.getValue() >= rhs.getValue();
+            } else {
+                ifElse = lhs.getValue() == rhs.getValue();
+            }
+            if (ifElse) {
+                return new Scope(taken).accept(this);
+            } else {
+                return new Scope(notTaken).accept(this);
+            }
         } else {
-            ifElse = lhs.getValue() == rhs.getValue();
+            return new Conditional(lhs, n.op, rhs, lhs, rhs);
+        }
+    }
+
+    @Override
+    public SymbolicExpression visit(FunctionDeclaration n) {
+        vars.put(new Variable(n.functionName), n);
+        return null;
+    }
+
+    @Override
+    public SymbolicExpression visit(End n) {
+        throw new RuntimeException("Commands may not be evaluated");
+    }
+
+    @Override
+    public SymbolicExpression visit(Sequence n) {
+        SymbolicExpression functionReturn = null;
+        for (SymbolicExpression p : n.body) {
+            functionReturn = p.accept(this);
+        }
+        return functionReturn;
+    }
+
+    @Override
+    public SymbolicExpression visit(FunctionCall n) {
+        FunctionDeclaration function = (FunctionDeclaration) vars.get(new Variable(n.functionName));
+        if (n.parameters.size() != function.parameters.size()) {
+            throw new IllegalExpressionException("Parameters don't match");
         }
 
-        if (ifElse) {
-            return sLhs;
-        } else {
-            return sRhs;
+        ArrayList<SymbolicExpression> valueParameters = n.parameters;
+        ArrayList<SymbolicExpression> nameParameters = function.parameters;
+
+        Environment temp = this.vars;
+        this.vars = (Environment) temp.clone();
+
+        for (int i = 0; i < valueParameters.size(); i++) {
+            SymbolicExpression con = valueParameters.get(i).accept(this);
+            Variable var = (Variable) nameParameters.get(i);
+            vars.put(var, con);
         }
+        SymbolicExpression functionResult = function.body.accept(this);
+
+        this.vars = temp;
+        return functionResult;
     }
 }

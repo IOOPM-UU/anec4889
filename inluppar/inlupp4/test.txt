@@ -1,0 +1,57 @@
+function gcd(a, b)
+b - a = ba
+a - b = ab
+if a == b { a } else { if a < b { gcd(a, ba) } else { gcd (ab, b) } }
+end
+gcd(2, 6)
+Quit
+
+function factorial(n)
+n - 1 = m
+if n > 1 {factorial(m) * n} else { 1 }
+end
+factorial(5)
+Quit
+
+function test(n)
+n - 1 = m
+m+15
+end
+test(3)
+Quit
+
+function max(x, y)
+if x > y {x} else {y}
+end
+max(4, 2)
+Quit
+
+function factorial(n)
+n - 1 = m
+if n > 1 {factorial(m) * n} else { 1 }
+end
+factorial(3)
+Quit
+
+
+function max(x, y)
+if x >= y {1} else {0}
+end
+max(4, 4)
+Quit
+
+
+
+
+
+
+function gcd(a, b)
+b - a = ba
+a - b = ab
+if a == b { a } else { if a < b { gcd(a, ba) } else { gcd (ab, b) } }
+end
+
+
+
+
+

@@ -13,7 +13,7 @@ test: datastrukturer/hash_table.c datastrukturer/linked_list.c webstore.o unit_t
 
 debug: datastrukturer/hash_table.c datastrukturer/linked_list.c webstore.c unit_test.c utils.c
 	gcc -Wall -g $^ -o test -lcunit
-	@gdb ./test
+	@gdb ./a.out
 
 memtest: test
 	valgrind --leak-check=full -s ./test 

@@ -1,5 +1,7 @@
 package org.ioopm.calculator.ast;
 
+import java.util.function.Function;
+
 public interface Visitor {
     public SymbolicExpression visit(Addition n);
 
@@ -36,4 +38,12 @@ public interface Visitor {
     public SymbolicExpression visit(Scope n);
 
     public SymbolicExpression visit(Conditional n);
+
+    public SymbolicExpression visit(FunctionDeclaration n);
+
+    public SymbolicExpression visit(End n);
+
+    public SymbolicExpression visit(Sequence n);
+
+    public SymbolicExpression visit(FunctionCall n);
 }

@@ -24,6 +24,6 @@ public class Conditional extends SymbolicExpression {
 
     @Override
     public int getPriority() {
-        return 0;
+        throw new RuntimeException("Has no getPriority()");
     }
 }

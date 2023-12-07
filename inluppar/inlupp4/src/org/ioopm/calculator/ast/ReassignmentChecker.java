@@ -125,4 +125,24 @@ public class ReassignmentChecker implements Visitor {
     public SymbolicExpression visit(Conditional n) {
         return null;
     }
+
+    @Override
+    public SymbolicExpression visit(FunctionDeclaration n) {
+        return null;
+    }
+
+    @Override
+    public SymbolicExpression visit(End n) {
+        return null;
+    }
+
+    @Override
+    public SymbolicExpression visit(Sequence n) {
+        return null;
+    }
+
+    @Override
+    public SymbolicExpression visit(FunctionCall n) {
+        return null;
+    }
 }

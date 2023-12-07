@@ -25,12 +25,11 @@ public class CalculatorParser {
     private static String LOG = "Log";
     private static String EXP = "Exp";
     private static char ASSIGNMENT = '=';
-    private static String lt = "<";
-    private static String gt = ">";
-    private static String lte = "<=";
-    private static String gte = ">=";
-    private static String eq = "==";
+    private static char lt = '<';
+    private static char gt = '>';
     private static String ELSE = "else";
+    private static String IF = "if";
+    private static String FUNCTION = "function";
 
     // unallowerdVars is used to check if variabel name that we
     // want to assign new meaning to is a valid name eg 3 = Quit
@@ -38,7 +37,7 @@ public class CalculatorParser {
     private final ArrayList<String> unallowedVars = new ArrayList<String>(Arrays.asList("Quit",
             "Vars",
             "Clear",
-            "if"));
+            "end"));
 
     /**
      * Used to parse the inputted string by the Calculator program
@@ -75,7 +74,8 @@ public class CalculatorParser {
 
         if (this.st.ttype == this.st.TT_WORD) { // vilken typ det senaste tecken vi läste in hade.
             if (this.st.sval.equals("Quit") || this.st.sval.equals("Vars") || this.st.sval.equals("Clear")
-                    || this.st.sval.equals("if")) { // sval =
+                    || this.st.sval.equals("end")) { // sval
+                                                     // =
                 // string
                 // Variable
                 result = command();
@@ -110,7 +110,7 @@ public class CalculatorParser {
         } else if (this.st.sval.equals("Vars")) {
             return Vars.instance();
         } else {
-            return conditional();
+            return End.instance();
         }
     }
 
@@ -261,10 +261,22 @@ public class CalculatorParser {
                     st.sval.equals(LOG)) {
 
                 result = unary();
+            } else if (st.sval.equals(IF)) {
+                result = conditional();
+            } else if (st.sval.equals(FUNCTION)) {
+                result = functionDeclaration();
             } else {
                 result = identifier();
+                this.st.nextToken();
+                if (this.st.ttype == '(') {
+                    result = functionCall(result);
+                } else {
+                    this.st.pushBack();
+                }
             }
-        } else {
+        } else
+
+        {
             this.st.pushBack();
             result = number();
         }
@@ -321,19 +333,29 @@ public class CalculatorParser {
         SymbolicExpression lhs = expression();
         this.st.nextToken();
         String op = "";
-        System.out.println("operator: " + st.toString());
-        if (this.st.sval.equals(lt)) {
-            op = "<";
-        } else if (this.st.sval.equals(gt)) {
-            op = ">";
-        } else if (this.st.sval.equals(lte)) {
-            op = "<=";
-        } else if (this.st.sval.equals(gte)) {
-            op = ">=";
-        } else if (this.st.sval.equals(eq)) {
-            op = "==";
-        } else {
-            throw new SyntaxErrorException("Error: Expected conditional operator");
+        if (this.st.ttype == lt) {
+            this.st.nextToken();
+            if (this.st.ttype == ASSIGNMENT) {
+                op = "<=";
+            } else {
+                op = "<";
+                this.st.pushBack();
+            }
+        } else if (this.st.ttype == gt) {
+            this.st.nextToken();
+            if (this.st.ttype == ASSIGNMENT) {
+                op = ">=";
+            } else {
+                op = ">";
+                this.st.pushBack();
+            }
+        } else if (this.st.ttype == ASSIGNMENT) {
+            this.st.nextToken();
+            if (this.st.ttype == ASSIGNMENT) {
+                op = "==";
+            } else {
+                throw new SyntaxErrorException("Error: missing one =");
+            }
         }
 
         this.st.nextToken();
@@ -343,8 +365,79 @@ public class CalculatorParser {
         this.st.nextToken();
         if (this.st.sval.equals(ELSE)) {
             this.st.nextToken();
+        } else {
+            throw new SyntaxErrorException("Error: Expected 'else'");
         }
         SymbolicExpression scopeRhs = new Scope(assignment());
         return new Conditional(lhs, op, rhs, scopeLhs, scopeRhs);
+    }
+
+    private SymbolicExpression functionDeclaration() throws IOException {
+        this.st.nextToken();
+        String functionName = "";
+        ArrayList<SymbolicExpression> parameters = new ArrayList<>();
+        if (this.st.ttype == this.st.TT_WORD) {
+            functionName = this.st.sval;
+        } else {
+            throw new SyntaxErrorException("Expected a function name");
+        }
+
+        this.st.nextToken();
+        if (this.st.ttype != '(') {
+            throw new SyntaxErrorException("Expected '(' after function call");
+        }
+
+        boolean nextParam = true;
+        while (nextParam) {
+            this.st.nextToken();
+            if (this.st.ttype == ')') {
+                break;
+            }
+            parameters.add(new Variable(this.st.sval));
+            this.st.nextToken();
+            if (this.st.ttype == ',') {
+                nextParam = true;
+            } else {
+                nextParam = false;
+            }
+        }
+        if (this.st.ttype != ')') {
+            throw new SyntaxErrorException("Expected ')' after parameters");
+        }
+
+        return new FunctionDeclaration(functionName, parameters);
+    }
+
+    private SymbolicExpression functionCall(SymbolicExpression functionName) throws IOException {
+        if (!vars.containsKey(functionName) && !(vars.get(functionName) instanceof FunctionDeclaration)) {
+            throw new IllegalExpressionException("Function does not exist!");
+        }
+        FunctionDeclaration funcDec = (FunctionDeclaration) vars.get(functionName);
+
+        if (this.st.ttype == ')') {
+            return new FunctionCall(funcDec.getName(), null);
+        }
+
+        ArrayList<SymbolicExpression> parameters = new ArrayList<>();
+
+        boolean nextParam = true;
+        while (nextParam) {
+            this.st.nextToken();
+            if (this.st.ttype == ')') {
+                break;
+            }
+            parameters.add(expression());
+            this.st.nextToken();
+            if (this.st.ttype == ',') {
+                nextParam = true;
+            } else {
+                nextParam = false;
+            }
+        }
+        if (this.st.ttype != ')') {
+            throw new SyntaxErrorException("Expected ')' after parameters");
+        }
+        return new FunctionCall(funcDec.getName(), parameters);
+
     }
 }

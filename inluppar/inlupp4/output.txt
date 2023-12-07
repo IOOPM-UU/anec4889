@@ -1,47 +1,10 @@
 Welcome to the parser 
 
-Please enter an expression: 6.0
+Please enter an expression: Entering function mode
 
-Please enter an expression: 0.1
-
-Please enter an expression: 2.0
-
-Please enter an expression: 1.0
-
-Please enter an expression: Error: Unexpected '('
-Please enter an expression: 1.0
-
-Please enter an expression: 1.0
-
-Please enter an expression: -1.0
-
-Please enter an expression: b
-
-Please enter an expression: 1.0
-
-Please enter an expression: 1.0 + b
-
-Please enter an expression: b + 1.0
-
-Please enter an expression: 2.0
-
-Please enter an expression: b + 1.0
-
-Please enter an expression: 2.0
-
-Please enter an expression: Variables: 
-a = 1.0
-ans = 2.0
-b = 2.0
-c = b + 1.0
-x = 1.0
-y = 2.0
-z = 4.0
-Please enter an expression: Error: Expected number
-Please enter an expression: Error: Unexpected '('
-Please enter an expression: Infinity
+Please enter a function statement, or type 'end': Please enter a function statement, or type 'end': Please enter a function statement, or type 'end': Please enter a function statement, or type 'end': Please enter an expression: 2.0
 
 Please enter an expression: Thank you for using the parser 
 
-Total expressions: 15
-Fully evaluated expressions: 11
+Total expressions: 1
+Fully evaluated expressions: 1
