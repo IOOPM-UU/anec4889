@@ -1,7 +1,6 @@
 package org.ioopm.calculator;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.ioopm.calculator.ast.*;
