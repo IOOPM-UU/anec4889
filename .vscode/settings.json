@@ -1,0 +1,6 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "inluppar/inlupp4/src/org/ioopm/calculator/junit-platform-console-standalone-1.8.1.jar"
+    ]
+}
